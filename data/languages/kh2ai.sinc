@@ -7,7 +7,7 @@ define space register type=register_space size=4;
 # the rx are used simply to store arguments of instr
 define register offset=0 size=4 [
 	r0 r1 r2 r3 r4 r5 r6 
-    r7 r8 pc sp test
+    r7 r8 pc sp test broken
 ];
 
 define token instr(8)
@@ -16,9 +16,14 @@ define token instr(8)
 	op3 = (6, 7)
 	rn = (4, 7);
 
+define token instr_advanced(16)
+	opa1 = (0, 3)
+	opa2 = (5, 9);
+
+
 
 # needed a full 4bit mapping 
-attach variables [ rn ] [ _ r0 r1 _ _ r0 r1 _ _ r0 r1 _ _ r0 r1 _ ];
+attach variables [ rn ] [ broken r0 r1 broken broken r0 r1 broken broken r0 r1 broken broken r0 r1 broken ];
 
 # please find a way to make it better
 @define AND_THREE "(op2=3 | op2=7 | op2=11 | op2=15)"
@@ -27,8 +32,12 @@ attach variables [ rn ] [ _ r0 r1 _ _ r0 r1 _ _ r0 r1 _ _ r0 r1 _ ];
 @define AND_ZERO "(op2=0 | op2=4 | op2=8 | op2=12)" 
 
 
+define token extnormal(8)
+    in = (0,7);
+
 define token extsmall(24)
-    ib = (8, 23);
+    ib = (8, 23)
+    ibl = (0, 23);
 
 define token ext(40)
 	il = (8, 39);
@@ -44,18 +53,73 @@ define pcodeop system_call;
 #
 
 #push
-:push il is op1=0 & $(AND_ZERO); il {
+:push il is op1=0 & ( $(AND_ZERO) | $(AND_ONE) ); il {
     *[ram]:4 sp = il:4;
     sp=sp+4;
 }
 
 #push and add
-:pusha rn,ib is op1=0 & ( $(AND_ONE) | $(AND_TWO) ) & rn ; ib {
+#TODO: 3 isn't handled exactly the same as 2, to check?
+:pusha rn,ib is op1=0 & ( $(AND_TWO) | $(AND_THREE) ) & rn ; ib {
     *[ram]:4 sp = rn:4+ib:4;
     sp=sp+4;
+}
+
+:pop ibl is op1=1 ; ibl {
+    #r0 *[ram]:4 sp;
+    sp=sp-4;
+}
+
+
+:unk2 is op1=2 ; ib {
+    #r0 *[ram]:4 sp;
+    sp=sp-4;
+}
+:unk3 is op1=3 ; ib {
+    #r0 *[ram]:4 sp;
+    sp=sp-4;
+}
+:unk4 is op1=4 ; in {
+    #r0 *[ram]:4 sp;
+    sp=sp-4;
+}
+:unk5 is op1=5  ; in{
+    #r0 *[ram]:4 sp;
+    sp=sp-4;
+}
+:unk6 is op1=6  ; in{
+    #r0 *[ram]:4 sp;
+    sp=sp-4;
+}
+:unk7 is op1=7  ; ib {
+    #r0 *[ram]:4 sp;
+    sp=sp-4;
+}
+:unk8 is op1=8 ; ib{
+    #r0 *[ram]:4 sp;
+    sp=sp-4;
+}
+
+:ret is opa1=9 & opa2=2{
+    #r0 *[ram]:4 sp;
+    sp=sp-4;
+}
+
+:unk9 is opa1=9 & opa2{
+    #r0 *[ram]:4 sp;
+    sp=sp-4;
+}
+:ret is op1=9 & op3=2; in{
+    #r0 *[ram]:4 sp;
+    sp=sp-4;
 }
 
 #syscall
 :syscall op3,ib is op1=0xA & op3 ; ib {
     r0=system_call();
+}
+
+:unkB is op1=0xB ; in{
+    #r0 *[ram]:4 sp;
+    sp=sp-4;
 }
