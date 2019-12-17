@@ -1,0 +1,4 @@
+define endian=little;
+#define alignment=2;
+
+@include "kh2ai.sinc"

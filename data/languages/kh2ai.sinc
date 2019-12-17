@@ -1,0 +1,53 @@
+# Main slaspec must define endianess and alignment
+
+define space ram type=ram_space size=4 wordsize=1 default;
+
+define space register type=register_space size=4;
+
+# the rx are used simply to store arguments of instr
+define register offset=0 size=4 [
+	r0 r1 r2 r3 r4 r5 r6 
+    r7 r8 pc sp test
+];
+
+define token instr(8)
+	op1 = (0, 3)
+	op2 = (4, 7)
+	op3 = (6, 7)
+	rn = (6, 7);
+
+define token extsmall(24)
+    ib = (8, 23);
+
+define token ext(40)
+	il = (8, 39);
+
+define pcodeop system_call;
+
+# only 2 and 3 are ever used but we need a full 2-bit mapping
+attach variables [ rn ] [ r0 r0 r1 r1 ];
+
+
+
+#
+#
+# Instructions
+#
+#
+
+#push
+:push il is op1=0 & op3=3 ; il {
+    *[ram]:4 sp = il:4;
+    sp=sp+4;
+}
+
+#push and add
+:pusha rn,ib is op1=0 & ( op3=1 | op3=2) & rn ; ib {
+    *[ram]:4 sp = rn:4+ib:4;
+    sp=sp+4;
+}
+
+#syscall
+:syscall op3,ib is op1=0xA & op3 ; ib {
+    r0=system_call();
+}

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<language_definitions>
+  <language processor="kh2ai"
+            endian="little"
+            size="32"
+            variant="default"
+            version="1.0"
+            slafile="kh2ai.sla"
+            processorspec="kh2ai.pspec"
+            id="KH2_AI:LE:32:default">
+    <description>Kingdom Hearts 2 pseudo-processor 32-bit little-endian</description>
+    <compiler name="default" spec="kh2ai.cspec" id="default"/>
+  </language>
+</language_definitions>
