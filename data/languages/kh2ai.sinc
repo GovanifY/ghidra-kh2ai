@@ -19,7 +19,8 @@ define token instr(8)
 define token instr_advanced(16)
 	opa1 = (0, 3)
 	opa4 = (6, 15)
-	opa2 = (4, 5);
+	opa2 = (4, 5)
+	iarg = (14, 15);
 	#opa3 = (5, 9);
 
 
@@ -27,6 +28,7 @@ define token instr_advanced(16)
 # needed a full 4bit mapping 
 attach variables [ rn ] [ broken r0 r1 broken broken r0 r1 broken broken r0 r1 broken broken r0 r1 broken ];
 
+attach values [ iarg ] [ 1 2 _ _ ];
 # please find a way to make it better
 @define AND_THREE "(op2=3 | op2=7 | op2=11 | op2=15)"
 @define AND_TWO "(op2=2 | op2=6 | op2=10 | op2=14)" 
@@ -232,7 +234,6 @@ define pcodeop system_call;
 :divf is opa1=6 & opa2=1 & opa4=3{
 }
 
-# MOST LIKELY IS A MOD BUT HECK I AIN'T REVERSING THAT
 # modulo (float)
 :modf is opa1=6 & opa2=1 & opa4=4{
 }
@@ -245,12 +246,33 @@ define pcodeop system_call;
 :unk8 is op1=8 ; ib{
 }
 
-# return
-:ret is opa1=9 & opa2=2{
+
+# 0x9 =========
+
+:exit iarg is opa1=9 & ( opa4=0 | opa4=1 ) & iarg{
+}
+
+# push cached -> push last cached pushed element to stack
+:pushca is opa1=9 & opa4=3{
+}
+
+# push copy -> push last pushed element to stack
+:pushc is opa1=9 & opa4=5{
+}
+
+# radians to degree 
+:radd is opa1=9 & opa4=9{
 }
 
 :unk9 is opa1=9 & opa2{
 }
+
+# return
+:ret is opa1=9 & opa2=2{
+}
+
+
+# 0x9 =========
 
 #syscall
 :syscall op3,ib is op1=0xA & op3 ; ib {
