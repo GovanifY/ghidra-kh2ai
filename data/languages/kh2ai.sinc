@@ -14,7 +14,18 @@ define token instr(8)
 	op1 = (0, 3)
 	op2 = (4, 7)
 	op3 = (6, 7)
-	rn = (6, 7);
+	rn = (4, 7);
+
+
+# needed a full 4bit mapping 
+attach variables [ rn ] [ _ r0 r1 _ _ r0 r1 _ _ r0 r1 _ _ r0 r1 _ ];
+
+# please find a way to make it better
+@define AND_THREE "(op2=3 | op2=7 | op2=11 | op2=15)"
+@define AND_TWO "(op2=2 | op2=6 | op2=10 | op2=14)" 
+@define AND_ONE "(op2=1 | op2=5 | op2=9 | op2=13)"  
+@define AND_ZERO "(op2=0 | op2=4 | op2=8 | op2=12)" 
+
 
 define token extsmall(24)
     ib = (8, 23);
@@ -23,9 +34,6 @@ define token ext(40)
 	il = (8, 39);
 
 define pcodeop system_call;
-
-# only 2 and 3 are ever used but we need a full 2-bit mapping
-attach variables [ rn ] [ r0 r0 r1 r1 ];
 
 
 
@@ -36,13 +44,13 @@ attach variables [ rn ] [ r0 r0 r1 r1 ];
 #
 
 #push
-:push il is op1=0 & op3=3 ; il {
+:push il is op1=0 & $(AND_ZERO); il {
     *[ram]:4 sp = il:4;
     sp=sp+4;
 }
 
 #push and add
-:pusha rn,ib is op1=0 & ( op3=1 | op3=2) & rn ; ib {
+:pusha rn,ib is op1=0 & ( $(AND_ONE) | $(AND_TWO) ) & rn ; ib {
     *[ram]:4 sp = rn:4+ib:4;
     sp=sp+4;
 }
