@@ -18,7 +18,9 @@ define token instr(8)
 
 define token instr_advanced(16)
 	opa1 = (0, 3)
-	opa2 = (5, 9);
+	opa4 = (6, 15)
+	opa2 = (4, 5);
+	#opa3 = (5, 9);
 
 
 
@@ -30,6 +32,8 @@ attach variables [ rn ] [ broken r0 r1 broken broken r0 r1 broken broken r0 r1 b
 @define AND_TWO "(op2=2 | op2=6 | op2=10 | op2=14)" 
 @define AND_ONE "(op2=1 | op2=5 | op2=9 | op2=13)"  
 @define AND_ZERO "(op2=0 | op2=4 | op2=8 | op2=12)" 
+
+
 
 
 define token extnormal(8)
@@ -66,52 +70,110 @@ define pcodeop system_call;
 }
 
 :pop ibl is op1=1 ; ibl {
-    #r0 *[ram]:4 sp;
     sp=sp-4;
 }
 
 
 :unk2 is op1=2 ; ib {
-    #r0 *[ram]:4 sp;
-    sp=sp-4;
 }
 :unk3 is op1=3 ; ib {
-    #r0 *[ram]:4 sp;
-    sp=sp-4;
 }
 :unk4 is op1=4 ; in {
-    #r0 *[ram]:4 sp;
-    sp=sp-4;
-}
-:unk5 is op1=5  ; in{
-    #r0 *[ram]:4 sp;
-    sp=sp-4;
-}
-:unk6 is op1=6  ; in{
-    #r0 *[ram]:4 sp;
-    sp=sp-4;
-}
-:unk7 is op1=7  ; ib {
-    #r0 *[ram]:4 sp;
-    sp=sp-4;
-}
-:unk8 is op1=8 ; ib{
-    #r0 *[ram]:4 sp;
-    sp=sp-4;
 }
 
+# 0x5 =========
+# comparison ops
+
+
+
+# convert float to int
+:cfti is opa1=5 & opa2=0 & opa4=0{
+}
+
+# convert to negative
+:neg is opa1=5 & opa2=0 & opa4=2{
+}
+
+# convert to negative
+:inv is opa1=5 & opa2=0 & opa4=3{
+}
+
+# is equal zero 
+:eqz is opa1=5 & opa2=0 & opa4=4{
+}
+
+# absolute 
+:abs is opa1=5 & opa2=0 & opa4=5{
+}
+
+# inferior to one 
+:info is opa1=5 & opa2=0 & opa4=7{
+}
+
+# not equal to one 
+:neqo is opa1=5 & opa2=0 & opa4=8{
+}
+
+# not equal to zero 
+:neqz is opa1=5 & opa2=0 & opa4=9{
+}
+
+# is positive 
+:ipos is opa1=5 & opa2=0 & opa4=0xb{
+}
+
+# 0x5 --- floats
+
+# convert int to float 
+:citf is opa1=5 & opa2=1 & opa4=0{
+}
+
+# convert to negative (float)
+:negf is opa1=5 & opa2=1 & opa4=2{
+}
+
+# ABS (float)
+:absf is opa1=5 & opa2=1 & opa4=5{
+}
+
+# inferior to zero (float)
+:infzf is opa1=5 & opa2=1 & opa4=6{
+}
+
+# inferior or equal to zero (float)
+:infoezf is opa1=5 & opa2=1 & opa4=7{
+}
+
+# equal to zero (float)
+:eqzf is opa1=5 & opa2=1 & opa4=8{
+}
+
+# equal to zero (float)
+:neqzf is opa1=5 & opa2=1 & opa4=9{
+}
+
+# superior or equal to zero (float)
+:supoezf is opa1=5 & opa2=1 & opa4=0xA{
+}
+
+# equal to zero (float)
+:supzf is opa1=5 & opa2=1 & opa4=0xB{
+}
+
+# 0x5 =========
+
+:unk6 is op1=6  ; in{
+}
+:unk7 is op1=7  ; ib {
+}
+:unk8 is op1=8 ; ib{
+}
+
+# return
 :ret is opa1=9 & opa2=2{
-    #r0 *[ram]:4 sp;
-    sp=sp-4;
 }
 
 :unk9 is opa1=9 & opa2{
-    #r0 *[ram]:4 sp;
-    sp=sp-4;
-}
-:ret is op1=9 & op3=2; in{
-    #r0 *[ram]:4 sp;
-    sp=sp-4;
 }
 
 #syscall
@@ -120,6 +182,4 @@ define pcodeop system_call;
 }
 
 :unkB is op1=0xB ; in{
-    #r0 *[ram]:4 sp;
-    sp=sp-4;
 }
