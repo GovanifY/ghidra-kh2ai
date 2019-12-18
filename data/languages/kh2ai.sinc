@@ -13,6 +13,7 @@ define register offset=0 size=4 [
 define token instr(8)
 	op1 = (0, 3)
 	op2 = (4, 7)
+	opand = (6, 7)
 	op3 = (6, 7)
 	rn = (4, 7);
 
@@ -28,6 +29,7 @@ define token instr_ext(32)
 	opeand = (4, 5)
 	ope3 = (6, 15)
 	ope6 = (8, 31)
+	opel = (0, 31)
     # the label thingy
 	ope2 = (16, 31);
 
@@ -38,10 +40,6 @@ attach variables [ rn ] [ broken r0 r1 broken broken r0 r1 broken broken r0 r1 b
 
 attach values [ iarg ] [ 1 2 _ _ ];
 # please find a way to make it better
-@define AND_THREE "(op2=3 | op2=7 | op2=11 | op2=15)"
-@define AND_TWO "(op2=2 | op2=6 | op2=10 | op2=14)" 
-@define AND_ONE "(op2=1 | op2=5 | op2=9 | op2=13)"  
-@define AND_ZERO "(op2=0 | op2=4 | op2=8 | op2=12)" 
 
 
 
@@ -67,11 +65,12 @@ define pcodeop print;
 #
 #
 
-#push
-:push il is op1=0 & ( $(AND_ZERO) | $(AND_ONE) ); il {
-    *[ram]:4 sp = il:4;
-    sp=sp+4;
+# standard push
+:push opel is opa1=0 & ( opa2=1 | opa2=0 ) ; opel {
+    #*[ram]:4 sp = LABEL02;
+    #sp=sp+4;
 }
+
 
 #push and add
 #TODO: 3 isn't handled exactly the same as 2, to check?
@@ -81,10 +80,10 @@ define pcodeop print;
 }
 
 #push and add
-#TODO: 3 isn't handled exactly the same as 2, to check?
-:pusha rn,ib is op1=0 & $(AND_THREE) & rn ; ib{
-    *[ram]:4 sp = rn:4+ib:4;
-    sp=sp+4;
+# same as 02 but without pointers
+:pusha is ope1=0 & opeand=3 {
+    #*[ram]:4 sp = LABEL02;
+    #sp=sp+4;
 }
 
 # sometimes it has arguments, to check!
