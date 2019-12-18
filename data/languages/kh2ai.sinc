@@ -30,8 +30,7 @@ define token instr_ext(32)
     # the label thingy
 	ope2 = (16, 31);
 
-LABEL: ope2 is ope2 { tmp:4 = (ope2:4 + ((inst_next/2)-0x10)); export tmp; }
-
+LABEL8: reloc is ope2	[ reloc = inst_start+(ope2*2)+4; ]	{ export *:4 reloc; }
 # needed a full 4bit mapping 
 attach variables [ rn ] [ broken r0 r1 broken broken r0 r1 broken broken r0 r1 broken broken r0 r1 broken ];
 
@@ -56,6 +55,7 @@ define token ext(40)
 	il = (8, 39);
 
 define pcodeop system_call;
+define pcodeop print;
 
 
 
@@ -165,7 +165,7 @@ define pcodeop system_call;
 :eqzf is opa1=5 & opa2=1 & opa4=8{
 }
 
-# equal to zero (float)
+# not equal to zero (float)
 :neqzf is opa1=5 & opa2=1 & opa4=9{
 }
 
@@ -257,8 +257,9 @@ define pcodeop system_call;
 }
 
 # jump 
-# TODO: offset is incorrect, need to fix!!!
-:jmp ope3, LABEL is ope1=8 & LABEL & ope3 {
+# TODO: verify first arg! 
+:jmp ope3, LABEL8 is ope1=8 & LABEL8 & ope3 {
+ goto LABEL8;
 }
 
 
