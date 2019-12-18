@@ -23,6 +23,11 @@ define token instr_advanced(16)
 	iarg = (14, 15);
 	#opa3 = (5, 9);
 
+define token instr_ext(32)
+	ope1 = (0, 3)
+	ope4 = (6, 31);
+	#opa3 = (5, 9);
+
 
 
 # needed a full 4bit mapping 
@@ -71,6 +76,7 @@ define pcodeop system_call;
     sp=sp+4;
 }
 
+# sometimes it has arguments, to check!
 :pop ibl is op1=1 ; ibl {
     sp=sp-4;
 }
@@ -111,7 +117,9 @@ define pcodeop system_call;
 :abs is opa1=5 & opa2=0 & opa4=5{
 }
 
-#TODO: implement 6
+# most significant bit
+:msb is opa1=5 & opa2=0 & opa4=6{
+}
 
 # inferior to one 
 :info is opa1=5 & opa2=0 & opa4=7{
@@ -121,7 +129,9 @@ define pcodeop system_call;
 :neqz is opa1=5 & opa2=0 & opa4=9{
 }
 
-#TODO: implement 0xA
+# most significant bit inverted
+:msbi is opa1=5 & opa2=0 & opa4=0xA{
+}
 
 # is positive 
 :ipos is opa1=5 & opa2=0 & opa4=0xb{
@@ -243,7 +253,10 @@ define pcodeop system_call;
 
 :unk7 is op1=7  ; ib {
 }
-:unk8 is op1=8 ; ib{
+
+# jump 
+# TODO: offset is incorrect, need to fix!!!
+:jmp ope4 is ope1=8 & ope4 {
 }
 
 
@@ -252,7 +265,12 @@ define pcodeop system_call;
 :exit iarg is opa1=9 & ( opa4=0 | opa4=1 ) & iarg{
 }
 
+# return
+:ret is opa1=9 & opa2=2{
+}
+
 # push cached -> push last cached pushed element to stack
+# don't ask me, this entire ISA is cursed
 :pushca is opa1=9 & opa4=3{
 }
 
@@ -260,16 +278,26 @@ define pcodeop system_call;
 :pushc is opa1=9 & opa4=5{
 }
 
+# cosinus
+# small note: i might have inversed sinus and cosinus as i did not reverse
+# either functions, they were pretty batshit insane
+:cos is opa1=9 & opa4=6{
+}
+
+# sinus
+:sin is opa1=9 & opa4=7{
+}
+
+# degrees to radians
+# /!\ radians are [0-2pi] in this engine
+:degr is opa1=9 & opa4=8{
+}
+
 # radians to degree 
 :radd is opa1=9 & opa4=9{
 }
 
-:unk9 is opa1=9 & opa2{
-}
 
-# return
-:ret is opa1=9 & opa2=2{
-}
 
 
 # 0x9 =========
