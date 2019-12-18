@@ -14,8 +14,7 @@ define token instr(8)
 	op1 = (0, 3)
 	op2 = (4, 7)
 	opand = (6, 7)
-	op3 = (6, 7)
-	rn = (4, 7);
+	op3 = (6, 7);
 
 define token instr_advanced(16)
 	opa1 = (0, 3)
@@ -27,6 +26,8 @@ define token instr_advanced(16)
 define token instr_ext(32)
 	ope1 = (0, 3)
 	opeand = (4, 5)
+	opesub = (6, 7)
+	rn = (6, 7)
 	ope3 = (6, 15)
 	ope6 = (8, 31)
 	opel = (0, 31)
@@ -36,7 +37,7 @@ define token instr_ext(32)
 LABEL8: reloc is ope2	[ reloc = inst_start+(ope2*2)+4; ]	{ export *:4 reloc; }
 LABEL02: reloc is ope2	[ reloc = 0x10+(ope2*2); ]	{ export *:4 reloc; }
 # needed a full 4bit mapping 
-attach variables [ rn ] [ broken r0 r1 broken broken r0 r1 broken broken r0 r1 broken broken r0 r1 broken ];
+attach variables [ rn ] [ _ r0 r1 _ ];
 
 attach values [ iarg ] [ 1 2 _ _ ];
 # please find a way to make it better
@@ -73,15 +74,45 @@ define pcodeop print;
 
 
 #push and add
-#TODO: 3 isn't handled exactly the same as 2, to check?
-:push LABEL02 is ope1=0 & opeand=2 & LABEL02 {
+:push2_unk0 is ope1=0 & opeand=2 & opesub=0 ; opa1 {
+    #*[ram]:4 sp = LABEL02;
+    #sp=sp+4;
+}
+
+# push and add
+:pusha rn, ope2 is ope1=0 & opeand=2 & opesub=1 & ope2 & rn {
+    #*[ram]:4 sp = LABEL02;
+    #sp=sp+4;
+}
+:push2_unk2  is ope1=0 & opeand=2 & opesub=2 {
+    #*[ram]:4 sp = LABEL02;
+    #sp=sp+4;
+}
+:push LABEL02 is ope1=0 & opeand=2 & opesub=3 & LABEL02 {
     #*[ram]:4 sp = LABEL02;
     #sp=sp+4;
 }
 
 #push and add
-# same as 02 but without pointers
-:pusha is ope1=0 & opeand=3 {
+:push3_unk0 is ope1=0 & opeand=3 & opesub=0 {
+    #*[ram]:4 sp = LABEL02;
+    #sp=sp+4;
+}
+
+#push and add
+:push3_unk1 is ope1=0 & opeand=3 & opesub=1 {
+    #*[ram]:4 sp = LABEL02;
+    #sp=sp+4;
+}
+
+#push and add
+:push3_unk2 is ope1=0 & opeand=3 & opesub=2 {
+    #*[ram]:4 sp = LABEL02;
+    #sp=sp+4;
+}
+
+#push and add
+:push3_unk3 is ope1=0 & opeand=3 & opesub=3 {
     #*[ram]:4 sp = LABEL02;
     #sp=sp+4;
 }

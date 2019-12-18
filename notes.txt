@@ -69,7 +69,7 @@ t3[right]=tmp-4
 
 =============================================================================================================
 TODO:
-0x0: pusha is broken
+0x0: reverse unknowns + fix oush label vs val
 0x1: is that a pop? also args
 0x2: to reverse
 0x3: to reverse
