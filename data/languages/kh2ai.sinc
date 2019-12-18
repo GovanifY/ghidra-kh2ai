@@ -25,10 +25,12 @@ define token instr_advanced(16)
 
 define token instr_ext(32)
 	ope1 = (0, 3)
-	ope4 = (6, 31);
-	#opa3 = (5, 9);
+	ope4 = (6, 31)
+	ope3 = (6, 15)
+    # the label thingy
+	ope2 = (16, 31);
 
-
+LABEL: ope2 is ope2 { tmp:4 = (ope2:4 + ((inst_next/2)-0x10)); export tmp; }
 
 # needed a full 4bit mapping 
 attach variables [ rn ] [ broken r0 r1 broken broken r0 r1 broken broken r0 r1 broken broken r0 r1 broken ];
@@ -256,7 +258,7 @@ define pcodeop system_call;
 
 # jump 
 # TODO: offset is incorrect, need to fix!!!
-:jmp ope4 is ope1=8 & ope4 {
+:jmp ope3, LABEL is ope1=8 & LABEL & ope3 {
 }
 
 
@@ -304,7 +306,7 @@ define pcodeop system_call;
 
 #syscall
 :syscall op3,ib is op1=0xA & op3 ; ib {
-    r0=system_call();
+    r0=system_call(op3:4,ib:4);
 }
 
 :unkB is op1=0xB ; in{

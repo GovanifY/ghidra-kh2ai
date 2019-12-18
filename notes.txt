@@ -1,0 +1,80 @@
+OPCodes are 8 bits, 0x0-0xB, lowest bits. Arguments come BEFORE(!!!!)
+
+def value(): 
+    if(Y==1): return state_r1+cmd
+    if(Y==2): return state_r2+cmd
+    if(Y==3): return cmd_0x10+(cmd<<1) #drops the opcode
+    else:     return cmd
+
+
+-0x0, PUSH, 48 bit operand, encoded 0xX000ZZZZZZZZ:
+    Y=X>>2
+    if(X & 3 == 2): r1 = mem[value(Y)]
+    if(X & 3 != 2): r1 = value(Y)
+    state_reg3=*addr
+-0x1, 16 bit operand, encoded 0xZYZ1:
+    r1 = value(Y) 
+    r1 = state_reg3...???????
+-0x2, 16 bit operand, encoded 0xZYZ1:
+
+
+-0x3, 32 bit operand, encoded 0x3:
+    r1 = state_reg3 + *addr
+
+
+
+    
+                             XX001000
+                             ^
+-0x8, JMP, 32 bit operand, encoded bXX001000:
+    state_reg2=X*4
+    *(state_reg2)=pc
+    entrypoint=X
+
+-0xA, JMP, 32 bit operand, encoded bXAXXYYYY:
+
+
+-0x5:
+--&3==0 aka integer:
+-0: to_int 
+-2:  minus
+-3: invert
+-4,8: compare w/ zero
+-5: absolute
+-6: ??
+-7: inferior to one
+-9: not equal to zero
+-0xa
+-0xb: is_positive
+--&3==1 aka float:
+-1: convert to word fixed point
+-2: minus
+-5: ABS
+-6: inferior to 0
+-7: inferior or equal to 0
+-8: equal to zero
+-9: not equal to zero
+-0xA: inferior or equal to zero
+-0xB: inferior to zero
+
+
+
+1da3f8
+======
+tmp=reg3
+reg3-=0x4
+t3[left]=tmp-1
+t3[right]=tmp-4
+
+
+=============================================================================================================
+TODO:
+0x0: push is broken
+0x1: is that a pop? also args
+0x2: to reverse
+0x3: to reverse
+0x4: to reverse
+0x7: to reverse, 2 ops
+0x8: jmp is broken
+0x9: verify which is sin and which is cos
+0xB: to reverse

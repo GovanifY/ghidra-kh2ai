@@ -1,2 +1,4 @@
 *.sla
-mep.zip
+*.swp
+.gdb_history
+
