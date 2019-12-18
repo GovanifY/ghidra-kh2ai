@@ -69,12 +69,12 @@ t3[right]=tmp-4
 
 =============================================================================================================
 TODO:
-0x0: push is broken
+0x0: pusha is broken
 0x1: is that a pop? also args
 0x2: to reverse
 0x3: to reverse
 0x4: to reverse
 0x7: to reverse, 2 ops
-0x8: jmp is broken
+0x8: figure out first arg of jmp, offset?
 0x9: verify which is sin and which is cos
 0xB: to reverse

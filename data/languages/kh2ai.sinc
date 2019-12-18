@@ -25,12 +25,14 @@ define token instr_advanced(16)
 
 define token instr_ext(32)
 	ope1 = (0, 3)
-	ope4 = (6, 31)
+	opeand = (4, 5)
 	ope3 = (6, 15)
+	ope6 = (8, 31)
     # the label thingy
 	ope2 = (16, 31);
 
 LABEL8: reloc is ope2	[ reloc = inst_start+(ope2*2)+4; ]	{ export *:4 reloc; }
+LABEL02: reloc is ope2	[ reloc = 0x10+(ope2*2); ]	{ export *:4 reloc; }
 # needed a full 4bit mapping 
 attach variables [ rn ] [ broken r0 r1 broken broken r0 r1 broken broken r0 r1 broken broken r0 r1 broken ];
 
@@ -73,7 +75,14 @@ define pcodeop print;
 
 #push and add
 #TODO: 3 isn't handled exactly the same as 2, to check?
-:pusha rn,ib is op1=0 & ( $(AND_TWO) | $(AND_THREE) ) & rn ; ib {
+:push LABEL02 is ope1=0 & opeand=2 & LABEL02 {
+    #*[ram]:4 sp = LABEL02;
+    #sp=sp+4;
+}
+
+#push and add
+#TODO: 3 isn't handled exactly the same as 2, to check?
+:pusha rn,ib is op1=0 & $(AND_THREE) & rn ; ib{
     *[ram]:4 sp = rn:4+ib:4;
     sp=sp+4;
 }
@@ -253,13 +262,19 @@ define pcodeop print;
 # 0x6 =========
 
 
-:unk7 is op1=7  ; ib {
+:jmp7_unk1 is ope1=7 & ope3=0 {
+}
+
+:jmp7_unk2 is ope1=7 & ope3=1 {
+}
+
+:jmp7_unk3 is ope1=7 & ope3=2 {
 }
 
 # jump 
 # TODO: verify first arg! 
 :jmp ope3, LABEL8 is ope1=8 & LABEL8 & ope3 {
- goto LABEL8;
+ call LABEL8;
 }
 
 
