@@ -266,7 +266,7 @@ define pcodeop system_call;
 }
 
 # return
-:ret is opa1=9 & opa2=2{
+:ret is opa1=9 & opa4=2{
 }
 
 # push cached -> push last cached pushed element to stack
