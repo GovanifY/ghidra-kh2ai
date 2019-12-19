@@ -1,0 +1,69 @@
+\documentclass[openany,oneside]{memoir}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{blindtext}
+\usepackage{fancyhdr}
+\usepackage[explicit]{titlesec}
+\usepackage{ifthen}
+
+% ISA version
+\newcommand\version{v0.1}
+
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[R]{KH2Ai ISA \version}
+\fancyhead[L]{GovanifY}
+\fancyfoot{-\thepage-}
+% alternating footer
+\fancyfoot[L]{\ifthenelse{\isodd{\value{page}}}{CC BY 4.0}{}}
+\fancyfoot[R]{\ifthenelse{\isodd{\value{page}}}{}{CC BY 4.0}}
+\renewcommand{\headrulewidth}{2pt}
+\renewcommand{\footrulewidth}{1pt}
+ 
+\titleformat{\chapter}[display]
+  {\normalfont\bfseries}{}{0pt}{\Huge}
+
+\newcommand{\Line}{\rule{\linewidth}{1.0mm}}
+\newcommand{\Chapter}[1]{
+\pagestyle{fancy}
+\chapter{#1}
+\begin{vplace}[0.7]
+{\Huge   \null\hfill{\textbf{\thechapter.  #1}}} \\
+\Line \\
+\end{vplace} 
+\newpage
+}
+
+\newcommand{\Main}[2]{
+\begin{vplace}[0.7]
+{\Huge   \null\hfill{\textbf{#1}}} \\
+\Line \\
+\huge \null\hfill \textbf{#2}
+\end{vplace}
+\newpage
+}
+
+% other preamble stuff...
+\usepackage{etoolbox}
+\patchcmd{\chapter}{\thispagestyle{plain}}{\thispagestyle{fancy}}{}{}
+
+\begin{document}
+
+\Main{Kh2Ai ISA}{\version}
+
+
+\Chapter{Notational Convention}
+
+
+\section{New section}
+
+\Blindtext
+\Blindtext
+
+\Chapter{Instruction Set}
+
+\section{push}
+
+\end{document}
+
