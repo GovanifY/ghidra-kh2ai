@@ -1,62 +1,44 @@
 # Main slaspec must define endianess and alignment
 
 define space ram type=ram_space size=4 wordsize=1 default;
-
 define space register type=register_space size=4;
 
-# the rx are used simply to store arguments of instr
+# this is obviously wrong and will need to be edited when i understand how
+# internal regs are used besides stack
 define register offset=0 size=4 [
 	r0 r1 r2 r3 r4 r5 r6 
     r7 r8 pc sp test broken
 ];
 
-define token instr(8)
-	op1 = (0, 3)
-	op2 = (4, 7)
-	opand = (6, 7)
-	op3 = (6, 7);
-
-define token instr_advanced(16)
-	opa1 = (0, 3)
-	opa4 = (6, 15)
-	opa2 = (4, 5)
+define token instr(16)
+	opcode = (0, 3)
+	ssub_opc = (6, 15)
+	sub_opc = (4, 5)
 	iarg = (14, 15);
-	#opa3 = (5, 9);
 
 define token instr_ext(32)
-	ope1 = (0, 3)
-	opeand = (4, 5)
+	opcode_ext = (0, 3)
+	sub_opc_ext = (4, 5)
 	opesub = (6, 7)
 	rn = (6, 7)
 	ope3 = (6, 15)
-	ope6 = (8, 31)
-	opel = (0, 31)
+	full_ext = (0, 31)
     # the label thingy
 	ope2 = (16, 31);
 
+# relocated labels
 LABEL8: reloc is ope2	[ reloc = inst_start+(ope2*2)+4; ]	{ export *:4 reloc; }
 LABEL02: reloc is ope2	[ reloc = 0x10+(ope2*2); ]	{ export *:4 reloc; }
-# needed a full 4bit mapping 
+
+# if i'm not mistaken 0x1da4d8 1 and 2 uses two regs
+# one of them or more is a status reg so i'll have to double check how it's used
 attach variables [ rn ] [ _ r0 r1 _ ];
 
+# exit values
 attach values [ iarg ] [ 1 2 _ _ ];
-# please find a way to make it better
 
-
-
-
-define token extnormal(8)
-    in = (0,7);
-
-define token extsmall(24)
-    ib = (8, 23)
-    ibl = (0, 23);
-
-define token ext(40)
-	il = (8, 39);
 
 define pcodeop system_call;
-define pcodeop print;
 
 
 
@@ -67,70 +49,51 @@ define pcodeop print;
 #
 
 # standard push
-:push opel is opa1=0 & ( opa2=1 | opa2=0 ) ; opel {
-    #*[ram]:4 sp = LABEL02;
-    #sp=sp+4;
+:push full_ext is opcode=0 & ( sub_opc=1 | sub_opc=0 ) ; full_ext {
 }
 
 
 #push and add
-:push2_unk0 is ope1=0 & opeand=2 & opesub=0 ; opa1 {
-    #*[ram]:4 sp = LABEL02;
-    #sp=sp+4;
+:push2_unk0 is opcode_ext=0 & sub_opc_ext=2 & opesub=0 ; opcode {
 }
 
 # push and add
-:pusha rn, ope2 is ope1=0 & opeand=2 & opesub=1 & ope2 & rn {
-    #*[ram]:4 sp = LABEL02;
-    #sp=sp+4;
+:pusha rn, ope2 is opcode_ext=0 & sub_opc_ext=2 & opesub=1 & ope2 & rn {
 }
-:push2_unk2  is ope1=0 & opeand=2 & opesub=2 {
-    #*[ram]:4 sp = LABEL02;
-    #sp=sp+4;
+:push2_unk2  is opcode_ext=0 & sub_opc_ext=2 & opesub=2 {
 }
-:push LABEL02 is ope1=0 & opeand=2 & opesub=3 & LABEL02 {
-    #*[ram]:4 sp = LABEL02;
-    #sp=sp+4;
+:push LABEL02 is opcode_ext=0 & sub_opc_ext=2 & opesub=3 & LABEL02 {
 }
 
 #push and add
-:push3_unk0 is ope1=0 & opeand=3 & opesub=0 {
-    #*[ram]:4 sp = LABEL02;
-    #sp=sp+4;
+:push3_unk0 is opcode_ext=0 & sub_opc_ext=3 & opesub=0 {
 }
 
 #push and add
-:push3_unk1 is ope1=0 & opeand=3 & opesub=1 {
-    #*[ram]:4 sp = LABEL02;
-    #sp=sp+4;
+:push3_unk1 is opcode_ext=0 & sub_opc_ext=3 & opesub=1 {
 }
 
 #push and add
-:push3_unk2 is ope1=0 & opeand=3 & opesub=2 {
-    #*[ram]:4 sp = LABEL02;
-    #sp=sp+4;
+:push3_unk2 is opcode_ext=0 & sub_opc_ext=3 & opesub=2 {
 }
 
 #push and add
-:push3_unk3 is ope1=0 & opeand=3 & opesub=3 {
-    #*[ram]:4 sp = LABEL02;
-    #sp=sp+4;
+:push3_unk3 is opcode_ext=0 & sub_opc_ext=3 & opesub=3 {
 }
 
 # sometimes it has arguments, to check!
-:pop ibl is op1=1 ; ibl {
-    sp=sp-4;
+:pop is opcode_ext=1 {
 }
 
 
-:unk2 is op1=2 ; ib {
+:unk2 is opcode_ext=2 {
 }
 
 # pops relative address from the stack and convert it to absolute
-:rela is op1=3 ; ib {
+:rela is opcode_ext=3  {
 }
 
-:unk4 is op1=4 ; in {
+:unk4 is opcode=4 {
 }
 
 # 0x5 =========
@@ -139,81 +102,81 @@ define pcodeop print;
 
 
 # convert float to int
-:cfti is opa1=5 & opa2=0 & opa4=0{
+:cfti is opcode=5 & sub_opc=0 & ssub_opc=0{
 }
 
 # convert to negative
-:neg is opa1=5 & opa2=0 & opa4=2{
+:neg is opcode=5 & sub_opc=0 & ssub_opc=2{
 }
 
 # invert 
-:inv is opa1=5 & opa2=0 & opa4=3{
+:inv is opcode=5 & sub_opc=0 & ssub_opc=3{
 }
 
 # is equal zero 
-:eqz is opa1=5 & opa2=0 & ( opa4=4 | opa4=8 ){
+:eqz is opcode=5 & sub_opc=0 & ( ssub_opc=4 | ssub_opc=8 ){
 }
 
 # absolute 
-:abs is opa1=5 & opa2=0 & opa4=5{
+:abs is opcode=5 & sub_opc=0 & ssub_opc=5{
 }
 
 # most significant bit
-:msb is opa1=5 & opa2=0 & opa4=6{
+:msb is opcode=5 & sub_opc=0 & ssub_opc=6{
 }
 
 # inferior to one 
-:info is opa1=5 & opa2=0 & opa4=7{
+:info is opcode=5 & sub_opc=0 & ssub_opc=7{
 }
 
 # not equal to zero 
-:neqz is opa1=5 & opa2=0 & opa4=9{
+:neqz is opcode=5 & sub_opc=0 & ssub_opc=9{
 }
 
 # most significant bit inverted
-:msbi is opa1=5 & opa2=0 & opa4=0xA{
+:msbi is opcode=5 & sub_opc=0 & ssub_opc=0xA{
 }
 
 # is positive 
-:ipos is opa1=5 & opa2=0 & opa4=0xb{
+:ipos is opcode=5 & sub_opc=0 & ssub_opc=0xb{
 }
 
 # 0x5 --- floats
 
 # convert int to float 
-:citf is opa1=5 & opa2=1 & opa4=0{
+:citf is opcode=5 & sub_opc=1 & ssub_opc=0{
 }
 
 # convert to negative (float)
-:negf is opa1=5 & opa2=1 & opa4=2{
+:negf is opcode=5 & sub_opc=1 & ssub_opc=2{
 }
 
 # ABS (float)
-:absf is opa1=5 & opa2=1 & opa4=5{
+:absf is opcode=5 & sub_opc=1 & ssub_opc=5{
 }
 
 # inferior to zero (float)
-:infzf is opa1=5 & opa2=1 & opa4=6{
+:infzf is opcode=5 & sub_opc=1 & ssub_opc=6{
 }
 
 # inferior or equal to zero (float)
-:infoezf is opa1=5 & opa2=1 & opa4=7{
+:infoezf is opcode=5 & sub_opc=1 & ssub_opc=7{
 }
 
 # equal to zero (float)
-:eqzf is opa1=5 & opa2=1 & opa4=8{
+:eqzf is opcode=5 & sub_opc=1 & ssub_opc=8{
 }
 
 # not equal to zero (float)
-:neqzf is opa1=5 & opa2=1 & opa4=9{
+:neqzf is opcode=5 & sub_opc=1 & ssub_opc=9{
 }
 
 # superior or equal to zero (float)
-:supoezf is opa1=5 & opa2=1 & opa4=0xA{
+:supoezf is opcode=5 & sub_opc=1 & ssub_opc=0xA{
 }
 
 # superior to zero (float)
-:supzf is opa1=5 & opa2=1 & opa4=0xB{
+:supzf is opcode=5 & sub_opc=1 & ssub_opc=0xB{
 }
 
 # 0x5 =========
@@ -223,126 +186,126 @@ define pcodeop print;
 # APU operations
 
 # addition
-:add is opa1=6 & opa2=0 & opa4=0{
+:add is opcode=6 & sub_opc=0 & ssub_opc=0{
 }
 
 # substraction
-:sub is opa1=6 & opa2=0 & opa4=1{
+:sub is opcode=6 & sub_opc=0 & ssub_opc=1{
 }
 
 # multiplication
-:mul is opa1=6 & opa2=0 & opa4=2{
+:mul is opcode=6 & sub_opc=0 & ssub_opc=2{
 }
 
 # division
-:div is opa1=6 & opa2=0 & opa4=3{
+:div is opcode=6 & sub_opc=0 & ssub_opc=3{
 }
 
 # modulo
-:mod is opa1=6 & opa2=0 & opa4=4{
+:mod is opcode=6 & sub_opc=0 & ssub_opc=4{
 }
 
 # logical and
-:and is opa1=6 & opa2=0 & opa4=5{
+:and is opcode=6 & sub_opc=0 & ssub_opc=5{
 }
 
 # logical or
-:or is opa1=6 & opa2=0 & opa4=6{
+:or is opcode=6 & sub_opc=0 & ssub_opc=6{
 }
 
 # logical exclusive or
-:xor is opa1=6 & opa2=0 & opa4=7{
+:xor is opcode=6 & sub_opc=0 & ssub_opc=7{
 }
 
 # shift logical left
-:sll is opa1=6 & opa2=0 & opa4=8{
+:sll is opcode=6 & sub_opc=0 & ssub_opc=8{
 }
 
 # shift right arithmetic
-:sra is opa1=6 & opa2=0 & opa4=9{
+:sra is opcode=6 & sub_opc=0 & ssub_opc=9{
 }
 
 # not equal to zero (2 variable stack edition) 
-:neqzv is opa1=6 & opa2=0 & opa4=0xA{
+:neqzv is opcode=6 & sub_opc=0 & ssub_opc=0xA{
 }
 
 # equal to zero (2 variable stack edition) 
-:eqzv is opa1=6 & opa2=0 & opa4=0xB{
+:eqzv is opcode=6 & sub_opc=0 & ssub_opc=0xB{
 }
 
 
 # addition (float)
-:addf is opa1=6 & opa2=1 & opa4=0{
+:addf is opcode=6 & sub_opc=1 & ssub_opc=0{
 }
 # substraction (float)
-:subf is opa1=6 & opa2=1 & opa4=1{
+:subf is opcode=6 & sub_opc=1 & ssub_opc=1{
 }
 # multiplication (float)
-:mulf is opa1=6 & opa2=1 & opa4=2{
+:mulf is opcode=6 & sub_opc=1 & ssub_opc=2{
 }
 
 # division (float)
-:divf is opa1=6 & opa2=1 & opa4=3{
+:divf is opcode=6 & sub_opc=1 & ssub_opc=3{
 }
 
 # modulo (float)
-:modf is opa1=6 & opa2=1 & opa4=4{
+:modf is opcode=6 & sub_opc=1 & ssub_opc=4{
 }
 
 # 0x6 =========
 
 
-:jmp7_unk1 is ope1=7 & ope3=0 {
+:jmp7_unk1 is opcode_ext=7 & ope3=0 {
 }
 
-:jmp7_unk2 is ope1=7 & ope3=1 {
+:jmp7_unk2 is opcode_ext=7 & ope3=1 {
 }
 
-:jmp7_unk3 is ope1=7 & ope3=2 {
+:jmp7_unk3 is opcode_ext=7 & ope3=2 {
 }
 
 # jump 
 # TODO: verify first arg! 
-:jmp ope3, LABEL8 is ope1=8 & LABEL8 & ope3 {
+:jmp ope3, LABEL8 is opcode_ext=8 & LABEL8 & ope3 {
  call LABEL8;
 }
 
 
 # 0x9 =========
 
-:exit iarg is opa1=9 & ( opa4=0 | opa4=1 ) & iarg{
+:exit iarg is opcode=9 & ( ssub_opc=0 | ssub_opc=1 ) & iarg{
 }
 
 # return
-:ret is opa1=9 & opa4=2{
+:ret is opcode=9 & ssub_opc=2{
 }
 
 # push cached -> push last cached pushed element to stack
 # don't ask me, this entire ISA is cursed
-:pushca is opa1=9 & opa4=3{
+:pushca is opcode=9 & ssub_opc=3{
 }
 
 # push copy -> push last pushed element to stack
-:pushc is opa1=9 & opa4=5{
+:pushc is opcode=9 & ssub_opc=5{
 }
 
 # cosinus
 # small note: i might have inversed sinus and cosinus as i did not reverse
 # either functions, they were pretty batshit insane
-:cos is opa1=9 & opa4=6{
+:cos is opcode=9 & ssub_opc=6{
 }
 
 # sinus
-:sin is opa1=9 & opa4=7{
+:sin is opcode=9 & ssub_opc=7{
 }
 
 # degrees to radians
 # /!\ radians are [0-2pi] in this engine
-:degr is opa1=9 & opa4=8{
+:degr is opcode=9 & ssub_opc=8{
 }
 
 # radians to degree 
-:radd is opa1=9 & opa4=9{
+:radd is opcode=9 & ssub_opc=9{
 }
 
 
@@ -351,9 +314,9 @@ define pcodeop print;
 # 0x9 =========
 
 #syscall
-:syscall op3,ib is op1=0xA & op3 ; ib {
-    r0=system_call(op3:4,ib:4);
+:syscall opesub,ope2 is opcode_ext=0xA & opesub & ope2 {
+    r0=system_call(opesub:4,ope2:4);
 }
 
-:unkB is op1=0xB ; in{
+:unkB is opcode=0xB {
 }
