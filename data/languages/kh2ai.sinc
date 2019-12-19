@@ -57,20 +57,22 @@ define pcodeop system_call;
 :push2_unk0 is opcode_ext=0 & sub_opc_ext=2 & opesub=0 ; opcode {
 }
 
-# push and add
-:pusha rn, ope2 is opcode_ext=0 & sub_opc_ext=2 & opesub=1 & ope2 & rn {
+# push and add to pointer
+:pushap rn, ope2 is opcode_ext=0 & sub_opc_ext=2 & opesub=1 & ope2 & rn {
 }
+
 :push2_unk2  is opcode_ext=0 & sub_opc_ext=2 & opesub=2 {
 }
+
 :push LABEL02 is opcode_ext=0 & sub_opc_ext=2 & opesub=3 & LABEL02 {
 }
 
-#push and add
+
 :push3_unk0 is opcode_ext=0 & sub_opc_ext=3 & opesub=0 {
 }
 
 #push and add
-:push3_unk1 is opcode_ext=0 & sub_opc_ext=3 & opesub=1 {
+:pusha rn, ope2 is opcode_ext=0 & sub_opc_ext=3 & opesub=1 & ope2 & rn {
 }
 
 #push and add
@@ -80,6 +82,9 @@ define pcodeop system_call;
 #push and add
 :push3_unk3 is opcode_ext=0 & sub_opc_ext=3 & opesub=3 {
 }
+
+
+
 
 # sometimes it has arguments, to check!
 :pop is opcode_ext=1 {
@@ -255,13 +260,16 @@ define pcodeop system_call;
 # 0x6 =========
 
 
-:jmp7_unk1 is opcode_ext=7 & ope3=0 {
+:jmp7_unk1 LABEL8 is opcode_ext=7 & ope3=0 & LABEL8 {
+  call LABEL8;
 }
 
-:jmp7_unk2 is opcode_ext=7 & ope3=1 {
+:jmp7_unk2 LABEL8 is opcode_ext=7 & ope3=1 & LABEL8 {
+  call LABEL8;
 }
 
-:jmp7_unk3 is opcode_ext=7 & ope3=2 {
+:jmp7_unk3 LABEL8 is opcode_ext=7 & ope3=2 & LABEL8 {
+  call LABEL8;
 }
 
 # jump 
@@ -289,14 +297,12 @@ define pcodeop system_call;
 :pushc is opcode=9 & ssub_opc=5{
 }
 
-# cosinus
-# small note: i might have inversed sinus and cosinus as i did not reverse
-# either functions, they were pretty batshit insane
-:cos is opcode=9 & ssub_opc=6{
+# sinus; arg in radians
+:sin is opcode=9 & ssub_opc=6{
 }
 
-# sinus
-:sin is opcode=9 & ssub_opc=7{
+# cosinus; arg in radians
+:cos is opcode=9 & ssub_opc=7{
 }
 
 # degrees to radians

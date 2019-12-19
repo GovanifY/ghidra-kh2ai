@@ -74,8 +74,7 @@ TODO:
 0x2: to reverse
 0x3: to reverse
 0x4: to reverse
-0x7: to reverse, 2 ops
 0xB: to reverse
 -----
 0x8: figure out first arg of jmp, offset?
-0x9: verify which is sin and which is cos
+0x7: figure out args and diff between 3 jmp 
