@@ -20,11 +20,12 @@
 \fancyfoot[R]{\ifthenelse{\isodd{\value{page}}}{}{CC BY 4.0}}
 \renewcommand{\headrulewidth}{2pt}
 \renewcommand{\footrulewidth}{1pt}
- 
+
 \titleformat{\chapter}[display]
   {\normalfont\bfseries}{}{0pt}{\Huge}
 
 \newcommand{\Line}{\rule{\linewidth}{1.0mm}}
+\newcommand{\Lineless}{\rule{\linewidth}{0.7mm}}
 \newcommand{\Chapter}[1]{
 \pagestyle{fancy}
 \chapter{#1}
@@ -41,6 +42,22 @@
 \Line \\
 \huge \null\hfill \textbf{#2}
 \end{vplace}
+\newpage
+}
+
+\newcommand{\ISA}[6]{
+\section*{\huge #1}
+\Lineless \\
+\textbf{Format} \\ 
+\hspace*{0.5cm} #2 \\ \\
+\textbf{Description} \\ 
+\hspace*{0.5cm} #3  \\ \\
+\textbf{Exceptions} \\ 
+\hspace*{0.5cm} #4 \\ \\
+\textbf{Operations} \\ 
+\hspace*{0.5cm} #5 \\ \\
+\textbf{Programming notes} \\ 
+\hspace*{0.5cm} #6 \\ \\
 \newpage
 }
 
@@ -63,7 +80,104 @@
 
 \Chapter{Instruction Set}
 
-\section{push}
+\ISA{PUSH: Push}{b}{c}{d}{e}{f}
+
+\ISA{PUSHA: Push and Add}{b}{c}{d}{e}{f}
+
+\ISA{PUSHAP: Push and Add to Pointer}{b}{c}{d}{e}{f}
+
+\ISA{POP: pop}{b}{c}{d}{e}{f}
+
+\ISA{CFTI: Convert Float To Int}{b}{c}{d}{e}{f}
+
+\ISA{NEG: convert to NEGative signed number}{b}{c}{d}{e}{f}
+
+\ISA{INV: INVert an unsigned value}{b}{c}{d}{e}{f}
+
+\ISA{EQZ: conditional is EQual Zero}{b}{c}{d}{e}{f}
+
+\ISA{ABS: convert to ABSolute value}{b}{c}{d}{e}{f}
+
+\ISA{MSB: return Most Significant Bit}{b}{c}{d}{e}{f}
+
+\ISA{INFO: conditional INFerior to One}{b}{c}{d}{e}{f}
+
+\ISA{NEQZ: conditional Not Equal to Zero}{b}{c}{d}{e}{f}
+
+\ISA{MSB: return Most Significant Bit Inverted}{b}{c}{d}{e}{f}
+
+\ISA{IPOS: Conditional Is POSitive}{b}{c}{d}{e}{f}
+
+\ISA{CITF: Convert Int To Float}{b}{c}{d}{e}{f}
+
+\ISA{NEGF: convert to NEGative Float}{b}{c}{d}{e}{f}
+
+\ISA{ABS: convert to ABSolute Float}{b}{c}{d}{e}{f}
+
+\ISA{INFZF: Conditional INFerior to Zero Float}{b}{c}{d}{e}{f}
+
+\ISA{INFOEZF: Conditional INFerior Or Equal to Zero Float}{b}{c}{d}{e}{f}
+
+\ISA{EQZF: conditional is EQual Zero Float}{b}{c}{d}{e}{f}
+
+\ISA{NEQZF: conditional Not Equal to Zero Float}{b}{c}{d}{e}{f}
+
+\ISA{SUPOEZF: conditional SUPerior Or Equal to Zero Float}{b}{c}{d}{e}{f}
+
+\ISA{SUPZF: conditional SUPerior to Zero Float}{b}{c}{d}{e}{f}
+
+\ISA{ADD: ADDition}{b}{c}{d}{e}{f}
+
+\ISA{SUB: SUBstraction}{b}{c}{d}{e}{f}
+
+\ISA{MUL: MULtiplication}{b}{c}{d}{e}{f}
+
+\ISA{DIV: DIVision}{b}{c}{d}{e}{f}
+
+\ISA{MOD: MODulo}{b}{c}{d}{e}{f}
+
+\ISA{AND: logical AND}{b}{c}{d}{e}{f}
+
+\ISA{OR: logical OR}{b}{c}{d}{e}{f}
+
+\ISA{XOR: logical eXclusive OR}{b}{c}{d}{e}{f}
+
+\ISA{SLL: Shift Logical Left}{b}{c}{d}{e}{f}
+
+\ISA{SRA: Shift Right Arithmetic}{b}{c}{d}{e}{f}
+
+\ISA{NEQZV: conditional Not EQual to Zero with stack Values}{b}{c}{d}{e}{f}
+
+\ISA{EQZV: conditional EQual to Zero with stack Values}{b}{c}{d}{e}{f}
+
+\ISA{ADDF: ADDition with Float values}{b}{c}{d}{e}{f}
+
+\ISA{SUBF: SUBstraction with Float values}{b}{c}{d}{e}{f}
+
+\ISA{MULF: MULtiplication with Float values}{b}{c}{d}{e}{f}
+
+\ISA{DIVF: DIVision with Float values}{b}{c}{d}{e}{f}
+
+\ISA{MODF: MODulo with Float values}{b}{c}{d}{e}{f}
+
+\ISA{JMP: JuMP}{b}{c}{d}{e}{f}
+
+\ISA{EXIT: EXIT}{b}{c}{d}{e}{f}
+
+\ISA{RET: RETurn}{b}{c}{d}{e}{f}
+
+\ISA{PUSHCA: PUSH CAched value}{b}{c}{d}{e}{f}
+
+\ISA{PUSHC: PUSH Copy}{b}{c}{d}{e}{f}
+
+\ISA{SIN: SINus}{b}{c}{d}{e}{f}
+
+\ISA{COS: COSinus}{b}{c}{d}{e}{f}
+
+\ISA{DEGR: DEGrees to Radians}{b}{c}{d}{e}{f}
+
+\ISA{RADD: RADians to Degrees}{b}{c}{d}{e}{f}
+
+\ISA{SYSCALL: SYStem CALL}{b}{c}{d}{e}{f}
 
 \end{document}
-

@@ -1,5 +1,8 @@
 *.sla
 .*.sw*
 .*.swp
+*.aux
+*.log
+*.pdf
 .gdb_history
 
