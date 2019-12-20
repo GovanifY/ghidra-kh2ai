@@ -8,6 +8,8 @@
 \usepackage[bookmarks=true]{hyperref}
 \usepackage{bookmark}
 \usepackage{xinttools}
+\usepackage{xstring}
+\usepackage{ifthen}
 
 \newcounter{bitindex}
 
@@ -73,18 +75,35 @@
 }
 
 \newcommand\bitpicture [1]{%
-  \setlength{\unitlength}{0.9mm}
+  \StrLen{#1}[\bitlen]
+  \StrLeft{#1}{32}[\bita]
+  \StrRight{#1}{32}[\bitb]
+  \ifthenelse{\bitlen > 16}{\setlength{\unitlength}{0.9mm}}{\setlength{\unitlength}{1.6mm}}
   \setlength{\fboxsep}{0mm}
   \begin{picture}(130,16)
     % sign bit
+  \ifthenelse{\bitlen > 32}{
   \setcounter{bitindex}{1}%
+  \xintFor* ##1 in {\bita}
+  \do
+  {\put(\numexpr 1+4*\value{bitindex},4){\framebox(4,8){##1}}%
+   \stepcounter{bitindex}}% 
+   
+   \setcounter{bitindex}{1}%
+  \xintFor* ##1 in {\bitb}
+  \do
+  {\put(\numexpr 1+4*\value{bitindex},-12){\framebox(4,8){##1}}%
+   \stepcounter{bitindex}} 
+  }{
+  \setcounter{bitindex}{1}% 
   \xintFor* ##1 in {#1}
   \do
   {\put(\numexpr 1+4*\value{bitindex},4){\framebox(4,8){##1}}%
    \stepcounter{bitindex}}%
+   }
   % upper labels
-  \put(0,14){\scriptsize{MSB}}
-  \put(126,14){\scriptsize{LSB}}
+  %\put(0,14){\scriptsize{MSB}}
+  %\put(126,14){\scriptsize{LSB}}
   %lower labels
  % \put(3,0){\scriptsize{S}}
 %  \put(7,0){\line(0,1){2}}
@@ -98,6 +117,7 @@
 %  \put(130,1){\vector(-1,0){38}}
 %  \put(130,0){\line(0,1){2}}
 \end{picture}%
+\ifthenelse{\bitlen > 32}{\\ \\ \\}{}
 }
 
 
@@ -120,7 +140,7 @@
 
 \Chapter{Instruction Set}
 
-\ISA{PUSH: Push}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{PUSH: Push}{b}{c}{d}{e}{f}{01000000010010010000111111010000111111}
 
 \ISA{PUSHA: Push and Add}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
 

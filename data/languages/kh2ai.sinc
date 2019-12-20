@@ -5,25 +5,25 @@ define space register type=register_space size=4;
 # this is obviously wrong and will need to be edited when i understand how
 # internal regs are used besides stack
 define register offset=0 size=4 [
-	r0 r1 r2 r3 r4 r5 r6 
+    r0 r1 r2 r3 r4 r5 r6 
     r7 r8 pc sp ra broken
 ];
 
 define token instr(16)
-	opcode = (0, 3)
-	ssub_opc = (6, 15)
-	sub_opc = (4, 5)
-	iarg = (14, 15);
+    opcode = (0, 3)
+    ssub_opc = (6, 15)
+    sub_opc = (4, 5)
+    iarg = (14, 15);
 
 define token instr_ext(32)
-	opcode_ext = (0, 3)
-	sub_opc_ext = (4, 5)
-	opesub = (6, 7)
-	rn = (6, 7)
-	ope3 = (6, 15)
-	full_ext = (0, 31)
-    # the label thingy
-	ope2 = (16, 31);
+    opcode_ext = (0, 3)
+    sub_opc_ext = (4, 5)
+    opesub = (6, 7)
+    rn = (6, 7)
+    ope3 = (6, 15)
+    full_ext = (0, 31)
+# the label thingy
+    ope2 = (16, 31);
 
 # relocated labels
 LABEL8: reloc is ope2	[ reloc = inst_start+(ope2*2)+4; ]	{ export *:4 reloc; }
@@ -47,13 +47,13 @@ define pcodeop degrees_to_radians;
 
 
 macro push(v) {
-  *[ram]:4 sp = v;
-  sp = sp + 4;
+    *[ram]:4 sp = v;
+    sp = sp + 4;
 }
 
 macro pop(v) {
-  sp = sp - 4;
-  v = *[ram]:4 sp;
+    sp = sp - 4;
+    v = *[ram]:4 sp;
 }
 
 #
@@ -83,7 +83,7 @@ macro pop(v) {
 }
 
 :push LABEL02 is opcode_ext=0 & sub_opc_ext=2 & opesub=3 & LABEL02 {
-    # this is wrong! it pushes the pointer, not the data
+# this is wrong! it pushes the pointer, not the data
     push(LABEL02:4);
 }
 
@@ -164,7 +164,7 @@ macro pop(v) {
     local tmp:4 = sp;
     pop(tmp);
     if(tmp s<= 0) goto <min>;
-        goto <done>;
+    goto <done>;
     <min>
         tmp=-tmp;     
     <done>
@@ -376,12 +376,12 @@ macro pop(v) {
     pop(tmp2);
     local ret:4 = 1;
     if(tmp!=0) goto <next>;
-        goto <end>;
+    goto <end>;
     <next>
         if(tmp2==0) goto <end>;
-            ret=0;
+    ret=0;
     <end>
-    push(ret);
+        push(ret);
 }
 
 # equal to zero (2 variable stack edition) 
@@ -392,12 +392,12 @@ macro pop(v) {
     pop(tmp2);
     local ret:4 = 1;
     if(tmp==0) goto <next>;
-        goto <end>;
+    goto <end>;
     <next>
         if(tmp2!=0) goto <end>;
-            ret=0;
+    ret=0;
     <end>
-    push(ret);
+        push(ret);
 }
 
 
@@ -442,7 +442,7 @@ macro pop(v) {
     local tmp2:4 = sp;
     pop(tmp);
     pop(tmp2);
-    # primitive doesn't exist, so we do with what we can
+# primitive doesn't exist, so we do with what we can
     local ret:4 = fmod(tmp2, tmp);
     push(ret);
 }
@@ -451,21 +451,21 @@ macro pop(v) {
 
 
 :jmp7_unk1 LABEL8 is opcode_ext=7 & ope3=0 & LABEL8 {
-  call LABEL8;
+    call LABEL8;
 }
 
 :jmp7_unk2 LABEL8 is opcode_ext=7 & ope3=1 & LABEL8 {
-  call LABEL8;
+    call LABEL8;
 }
 
 :jmp7_unk3 LABEL8 is opcode_ext=7 & ope3=2 & LABEL8 {
-  call LABEL8;
+    call LABEL8;
 }
 
 # jump 
 # TODO: verify first arg! 
 :jmp ope3, LABEL8 is opcode_ext=8 & LABEL8 & ope3 {
-  call LABEL8;
+    call LABEL8;
 }
 
 
@@ -477,7 +477,7 @@ macro pop(v) {
 
 # return
 :ret is opcode=9 & ssub_opc=2{
-  return[ra];
+    return[ra];
 }
 
 # push cached -> push last cached pushed element to stack

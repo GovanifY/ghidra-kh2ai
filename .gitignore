@@ -2,6 +2,7 @@
 .*.sw*
 .*.swp
 .swp
+*.swp
 *.aux
 *.log
 *.pdf

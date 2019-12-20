@@ -5,7 +5,7 @@
             endian="little"
             size="32"
             variant="default"
-            version="1.0"
+            version="0.1"
             slafile="kh2ai.sla"
             processorspec="kh2ai.pspec"
             manualindexfile="../manuals/kh2ai.idx"
