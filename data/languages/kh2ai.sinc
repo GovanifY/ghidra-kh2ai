@@ -163,7 +163,7 @@ macro pop(v) {
 :abs is opcode=5 & sub_opc=0 & ssub_opc=5{
     local tmp:4 = sp;
     pop(tmp);
-    if(tmp<=0) goto <min>;
+    if(tmp s<= 0) goto <min>;
         goto <done>;
     <min>
         tmp=-tmp;     
@@ -183,7 +183,7 @@ macro pop(v) {
 :info is opcode=5 & sub_opc=0 & ssub_opc=7{
     local tmp:4 = sp;
     pop(tmp);
-    push((tmp < 1));
+    push((tmp s< 1));
 }
 
 # not equal to zero 
@@ -205,7 +205,7 @@ macro pop(v) {
 :ipos is opcode=5 & sub_opc=0 & ssub_opc=0xb{
     local tmp:4 = sp;
     pop(tmp);
-    push((tmp > 0));
+    push((tmp s> 0));
 }
 
 # 0x5 --- floats
@@ -232,26 +232,44 @@ macro pop(v) {
 
 # inferior to zero (float)
 :infzf is opcode=5 & sub_opc=1 & ssub_opc=6{
+    local tmp:4 = sp;
+    pop(tmp);
+    push((tmp f< 0));
 }
 
 # inferior or equal to zero (float)
 :infoezf is opcode=5 & sub_opc=1 & ssub_opc=7{
+    local tmp:4 = sp;
+    pop(tmp);
+    push((tmp f<= 0));
 }
 
 # equal to zero (float)
 :eqzf is opcode=5 & sub_opc=1 & ssub_opc=8{
+    local tmp:4 = sp;
+    pop(tmp);
+    push((tmp f== 0));
 }
 
 # not equal to zero (float)
 :neqzf is opcode=5 & sub_opc=1 & ssub_opc=9{
+    local tmp:4 = sp;
+    pop(tmp);
+    push((tmp f!= 0));
 }
 
 # superior or equal to zero (float)
 :supoezf is opcode=5 & sub_opc=1 & ssub_opc=0xA{
+    local tmp:4 = sp;
+    pop(tmp);
+    push((tmp f>= 0));
 }
 
 # superior to zero (float)
 :supzf is opcode=5 & sub_opc=1 & ssub_opc=0xB{
+    local tmp:4 = sp;
+    pop(tmp);
+    push((tmp f> 0));
 }
 
 # 0x5 =========

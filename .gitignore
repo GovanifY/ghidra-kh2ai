@@ -1,6 +1,7 @@
 *.sla
 .*.sw*
 .*.swp
+.swp
 *.aux
 *.log
 *.pdf
