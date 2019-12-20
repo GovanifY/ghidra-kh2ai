@@ -54,11 +54,11 @@
 \newpage
 }
 
-\newcommand{\ISA}[6]{
+\newcommand{\ISA}[7]{
 \section{\huge #1}
 \Lineless \\
 \textbf{Operation Code} \\ \\
-\bitpicture {0}{10000000}{10010010000111111010000} \\ \\
+\bitpicture {#7} \\ \\
 \textbf{Format} \\ 
 \hspace*{0.5cm} #2 \\ \\
 \textbf{Description} \\ 
@@ -72,39 +72,31 @@
 \newpage
 }
 
-\newcommand\bitpicture [3]{%
+\newcommand\bitpicture [1]{%
   \setlength{\unitlength}{0.9mm}
   \setlength{\fboxsep}{0mm}
   \begin{picture}(130,16)
     % sign bit
-  \put(2,4){\framebox(4,8){#1}}
-  % exponent
   \setcounter{bitindex}{1}%
-  \xintFor* ##1 in {#2}
+  \xintFor* ##1 in {#1}
   \do
-  {\put(\numexpr 2+4*\value{bitindex},4){\framebox(4,8){##1}}%
-   \stepcounter{bitindex}}%
-  % fraction
-  \setcounter{bitindex}{1}%
-  \xintFor* ##1 in {#3}
-  \do
-  {\put(\numexpr 34+4*\value{bitindex},4){\framebox(4,8){##1}}%
+  {\put(\numexpr 1+4*\value{bitindex},4){\framebox(4,8){##1}}%
    \stepcounter{bitindex}}%
   % upper labels
   \put(0,14){\scriptsize{MSB}}
   \put(126,14){\scriptsize{LSB}}
   %lower labels
-  \put(3,0){\scriptsize{S}}
-  \put(7,0){\line(0,1){2}}
-  \put(7,1){\vector(1,0){8}}
-  \put(16,0){\scriptsize{Exponent}}
-  \put(37,1){\vector(-1,0){8}}
-  \put(37,0){\line(0,1){2}}
-  \put(39,0){\line(0,1){2}}
-  \put(39,1){\vector(1,0){38}}
-  \put(79,0){\scriptsize{Fraction}}
-  \put(130,1){\vector(-1,0){38}}
-  \put(130,0){\line(0,1){2}}
+ % \put(3,0){\scriptsize{S}}
+%  \put(7,0){\line(0,1){2}}
+%  \put(7,1){\vector(1,0){8}}
+%  \put(16,0){\scriptsize{Exponent}}
+%  \put(37,1){\vector(-1,0){8}}
+%  \put(37,0){\line(0,1){2}}
+%  \put(39,0){\line(0,1){2}}
+%  \put(39,1){\vector(1,0){38}}
+%  \put(79,0){\scriptsize{Fraction}}
+%  \put(130,1){\vector(-1,0){38}}
+%  \put(130,0){\line(0,1){2}}
 \end{picture}%
 }
 
@@ -128,104 +120,116 @@
 
 \Chapter{Instruction Set}
 
-\ISA{PUSH: Push}{b}{c}{d}{e}{f}
+\ISA{PUSH: Push}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{PUSHA: Push and Add}{b}{c}{d}{e}{f}
+\ISA{PUSHA: Push and Add}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{PUSHAP: Push and Add to Pointer}{b}{c}{d}{e}{f}
+\ISA{PUSHAP: Push and Add to Pointer}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{POP: pop}{b}{c}{d}{e}{f}
+\ISA{POP: pop}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{CFTI: Convert Float To Int}{b}{c}{d}{e}{f}
+\ISA{CFTI: Convert Float To Int}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{NEG: convert to NEGative signed number}{b}{c}{d}{e}{f}
+\ISA{NEG: convert to NEGative signed number}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{INV: INVert an unsigned value}{b}{c}{d}{e}{f}
+\ISA{INV: INVert an unsigned value}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{EQZ: conditional is EQual Zero}{b}{c}{d}{e}{f}
+\ISA{EQZ: conditional is EQual Zero}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{ABS: convert to ABSolute value}{b}{c}{d}{e}{f}
+\ISA{ABS: convert to ABSolute value}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{MSB: return Most Significant Bit}{b}{c}{d}{e}{f}
+\ISA{MSB: return Most Significant Bit}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{INFO: conditional INFerior to One}{b}{c}{d}{e}{f}
+\ISA{INFO: conditional INFerior to One}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{NEQZ: conditional Not Equal to Zero}{b}{c}{d}{e}{f}
+\ISA{NEQZ: conditional Not Equal to Zero}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{MSB: return Most Significant Bit Inverted}{b}{c}{d}{e}{f}
+\ISA{MSB: return Most Significant Bit Inverted}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{IPOS: Conditional Is POSitive}{b}{c}{d}{e}{f}
+\ISA{IPOS: Conditional Is POSitive}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{CITF: Convert Int To Float}{b}{c}{d}{e}{f}
+\ISA{CITF: Convert Int To Float}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{NEGF: convert to NEGative Float}{b}{c}{d}{e}{f}
+\ISA{NEGF: convert to NEGative Float}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{ABS: convert to ABSolute Float}{b}{c}{d}{e}{f}
+\ISA{ABS: convert to ABSolute Float}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{INFZF: Conditional INFerior to Zero Float}{b}{c}{d}{e}{f}
+\ISA{INFZF: Conditional INFerior to Zero Float}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{INFOEZF: Conditional INFerior Or Equal to Zero Float}{b}{c}{d}{e}{f}
+\ISA{INFOEZF: Conditional INFerior Or Equal to Zero Float}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{EQZF: conditional is EQual Zero Float}{b}{c}{d}{e}{f}
+\ISA{EQZF: conditional is EQual Zero Float}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{NEQZF: conditional Not Equal to Zero Float}{b}{c}{d}{e}{f}
+\ISA{NEQZF: conditional Not Equal to Zero Float}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{SUPOEZF: conditional SUPerior Or Equal to Zero Float}{b}{c}{d}{e}{f}
+\ISA{SUPOEZF: conditional SUPerior Or Equal to Zero Float}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{SUPZF: conditional SUPerior to Zero Float}{b}{c}{d}{e}{f}
+\ISA{SUPZF: conditional SUPerior to Zero Float}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{ADD: ADDition}{b}{c}{d}{e}{f}
+\ISA{ADD: ADDition}{b}{c}{d}{e}{f}{11000010000000001}
 
-\ISA{SUB: SUBstraction}{b}{c}{d}{e}{f}
+\ISA{SUB: SUBstraction}{b}{c}{d}{e}{f}{11000010000000001}
 
-\ISA{MUL: MULtiplication}{b}{c}{d}{e}{f}
+\ISA{MUL: MULtiplication}{b}{c}{d}{e}{f}{11000010000000010}
 
-\ISA{DIV: DIVision}{b}{c}{d}{e}{f}
+\ISA{DIV: DIVision}{b}{c}{d}{e}{f}{11000010000000011}
 
-\ISA{MOD: MODulo}{b}{c}{d}{e}{f}
+\ISA{MOD: MODulo}{b}{c}{d}{e}{f}{11000010000000100}
 
-\ISA{AND: logical AND}{b}{c}{d}{e}{f}
+\ISA{AND: logical AND}{b}{c}{d}{e}{f}{11000010000000101}
 
-\ISA{OR: logical OR}{b}{c}{d}{e}{f}
+\ISA{OR: logical OR}{b}{c}{d}{e}{f}{11000010000000110}
 
-\ISA{XOR: logical eXclusive OR}{b}{c}{d}{e}{f}
+\ISA{XOR: logical eXclusive OR}{b}{c}{d}{e}{f}{11000010000000111}
 
-\ISA{SLL: Shift Logical Left}{b}{c}{d}{e}{f}
+\ISA{SLL: Shift Logical Left}{b}{c}{d}{e}{f}{11000010000001000}
 
-\ISA{SRA: Shift Right Arithmetic}{b}{c}{d}{e}{f}
+\ISA{SRA: Shift Right Arithmetic}{b}{c}{d}{e}{f}{11000010000001001}
 
-\ISA{NEQZV: conditional Not EQual to Zero with stack Values}{b}{c}{d}{e}{f}
+\ISA{NEQZV: conditional Not EQual to Zero with stack Values}{b}{c}{d}{e}{f}{1100001000001010}
 
-\ISA{EQZV: conditional EQual to Zero with stack Values}{b}{c}{d}{e}{f}
+\ISA{EQZV: conditional EQual to Zero with stack Values}{b}{c}{d}{e}{f}{11000010000001011}
 
-\ISA{ADDF: ADDition with Float values}{b}{c}{d}{e}{f}
+\ISA{ADDF: ADDition with Float values}{b}{c}{d}{e}{f}{11000010000000000}
 
-\ISA{SUBF: SUBstraction with Float values}{b}{c}{d}{e}{f}
+\ISA{SUBF: SUBstraction with Float values}{b}{c}{d}{e}{f}{11000010000000001}
 
-\ISA{MULF: MULtiplication with Float values}{b}{c}{d}{e}{f}
+\ISA{MULF: MULtiplication with Float values}{b}{c}{d}{e}{f}{11000010000000010}
 
-\ISA{DIVF: DIVision with Float values}{b}{c}{d}{e}{f}
+\ISA{DIVF: DIVision with Float values}{b}{c}{d}{e}{f}{11000010000000011}
 
-\ISA{MODF: MODulo with Float values}{b}{c}{d}{e}{f}
+\ISA{MODF: MODulo with Float values}{b}{c}{d}{e}{f}{11000010000000100}
 
-\ISA{JMP: JuMP}{b}{c}{d}{e}{f}
+\ISA{JMP: JuMP}{b}{c}{d}{e}{f}{TODO}
 
-\ISA{EXIT: EXIT}{b}{c}{d}{e}{f}
+\ISA{EXIT: EXIT}{r=exit value}{c}{d}{e}{f}{100100000000000r}
 
-\ISA{RET: RETurn}{b}{c}{d}{e}{f}
+\ISA{RET: RETurn}{b}{c}{d}{e}{f}{1001000000000010}
 
-\ISA{PUSHCA: PUSH CAched value}{b}{c}{d}{e}{f}
+\ISA{PUSHCA: PUSH CAched value}{b}{c}{d}{e}{f}{1001000000000011}
 
-\ISA{PUSHC: PUSH Copy}{b}{c}{d}{e}{f}
+\ISA{PUSHC: PUSH Copy}{b}{c}{d}{e}{f}{1001000000000101}
 
-\ISA{SIN: SINus}{b}{c}{d}{e}{f}
+\ISA{SIN: SINus}{b}{c}{d}{e}{f}{1001000000000110}
 
-\ISA{COS: COSinus}{b}{c}{d}{e}{f}
+\ISA{COS: COSinus}{Retrieves the latest value pushed to the stack and apply a
+cosinus onto it, pushing it to the stack}{None}{d}{e}{Radians are used as input. Radians used are modulo pi-2pi}{1001000000000111}
 
-\ISA{DEGR: DEGrees to Radians}{b}{c}{d}{e}{f}
+\ISA{DEGR: DEGrees to Radians}{Retrieves the last element pushed to the stack
+and converts it to radians, pushing it to the stack}{None}{d}{e}{Radians used are modulo pi-2pi}{1001000000001000}
 
-\ISA{RADD: RADians to Degrees}{b}{c}{d}{e}{f}
+\ISA{RADD: RADians to Degrees}{RADD}{Retrieves the last element pushed to the
+stack and converts it to degrees, pushing it to the stack}{None}{e}{Radians used are modulo pi-2pi}{1001000000001001}
 
-\ISA{SYSCALL: SYStem CALL}{b}{c}{d}{e}{f}
+\ISA{SYSCALL: SYStem CALL}{b}{c}{d}{e}{f}{TODO}
+
+
+\Chapter{System Calls}
+
+\section{Introduction}
+What is a system call blabla.
+None of them are currently documented, they are available at address 0x0034dd00
+of SLPM\_666.75,  and there is 738 elements if I'm not mistaken. Either try to
+guess their arguments 
 
 \end{document}

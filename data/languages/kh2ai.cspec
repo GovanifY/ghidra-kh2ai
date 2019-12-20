@@ -26,6 +26,9 @@
     <range space="ram"/>
   </global>
   <stackpointer register="sp" space="ram"/>
+  <returnaddress>
+    <register name="ra"/>
+  </returnaddress>
   <default_proto>
     <prototype name="__stdcall" extrapop="0" stackshift="0">
       <input>

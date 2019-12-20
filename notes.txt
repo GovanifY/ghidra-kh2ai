@@ -78,3 +78,7 @@ TODO:
 -----
 0x8: figure out first arg of jmp, offset?
 0x7: figure out args and diff between 3 jmp 
+
+==============
+SOMETHING IS UNALIGNED IN ONE OF THOSE OPCODES!!!!:
+push3_unk0,push2_unk0,push(not label), unk2,unk4,rela,jmp7_unk{1_2}

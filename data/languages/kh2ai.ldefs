@@ -9,7 +9,7 @@
             slafile="kh2ai.sla"
             processorspec="kh2ai.pspec"
             manualindexfile="../manuals/kh2ai.idx"
-            id="KH2_AI:LE:32:default">
+            id="kh2_ai:le:32:default">
     <description>Kingdom Hearts 2 pseudo-processor 32-bit little-endian</description>
     <compiler name="default" spec="kh2ai.cspec" id="default"/>
   </language>

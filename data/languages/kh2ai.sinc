@@ -1,4 +1,3 @@
-# Main slaspec must define endianess and alignment
 
 define space ram type=ram_space size=4 wordsize=1 default;
 define space register type=register_space size=4;
@@ -7,7 +6,7 @@ define space register type=register_space size=4;
 # internal regs are used besides stack
 define register offset=0 size=4 [
 	r0 r1 r2 r3 r4 r5 r6 
-    r7 r8 pc sp test broken
+    r7 r8 pc sp ra broken
 ];
 
 define token instr(16)
@@ -39,8 +38,23 @@ attach values [ iarg ] [ 1 2 _ _ ];
 
 
 define pcodeop system_call;
+define pcodeop fmod;
+define pcodeop exit;
+define pcodeop cos;
+define pcodeop sin;
+define pcodeop radians_to_degrees;
+define pcodeop degrees_to_radians;
 
 
+macro push(v) {
+  *[ram]:4 sp = v;
+  sp = sp + 4;
+}
+
+macro pop(v) {
+  sp = sp - 4;
+  v = *[ram]:4 sp;
+}
 
 #
 #
@@ -53,6 +67,7 @@ define pcodeop system_call;
 
 # standard push
 :push full_ext is opcode=0 & ( sub_opc=1 | sub_opc=0 ) ; full_ext {
+    push(full_ext:4);
 }
 
 
@@ -68,6 +83,8 @@ define pcodeop system_call;
 }
 
 :push LABEL02 is opcode_ext=0 & sub_opc_ext=2 & opesub=3 & LABEL02 {
+    # this is wrong! it pushes the pointer, not the data
+    push(LABEL02:4);
 }
 
 
@@ -94,14 +111,14 @@ define pcodeop system_call;
 }
 
 
-:unk2 is opcode_ext=2 {
+:unk2 is opcode_ext=2  {
 }
 
 # pops relative address from the stack and convert it to absolute
 :rela is opcode_ext=3  {
 }
 
-:unk4 is opcode=4 {
+:unk4 is opcode=4  {
 }
 
 # 0x5 =========
@@ -111,48 +128,94 @@ define pcodeop system_call;
 
 # convert float to int
 :cfti is opcode=5 & sub_opc=0 & ssub_opc=0{
+    local tmp:4 = sp;
+    pop(tmp);
+    tmp = round(tmp);
+    push(tmp);
 }
 
 # convert to negative
 :neg is opcode=5 & sub_opc=0 & ssub_opc=2{
+    local tmp:4 = sp;
+    pop(tmp);
+    tmp = tmp;
+    tmp=-tmp;
+    push(tmp);
 }
 
 # invert 
 :inv is opcode=5 & sub_opc=0 & ssub_opc=3{
+    local tmp:4 = sp;
+    pop(tmp);
+    tmp = ~tmp;
+    push(tmp);
 }
 
 # is equal zero 
 :eqz is opcode=5 & sub_opc=0 & ( ssub_opc=4 | ssub_opc=8 ){
+    local tmp:4 = sp;
+    pop(tmp);
+    local ret = (tmp == 0);
+    push(ret);
 }
 
 # absolute 
 :abs is opcode=5 & sub_opc=0 & ssub_opc=5{
+    local tmp:4 = sp;
+    pop(tmp);
+    if(tmp<=0) goto <min>;
+        goto <done>;
+    <min>
+        tmp=-tmp;     
+    <done>
+        push(tmp);
 }
 
 # most significant bit
 :msb is opcode=5 & sub_opc=0 & ssub_opc=6{
+    local tmp:4 = sp;
+    pop(tmp);
+    tmp = tmp >> 0x1F;
+    push(tmp);
 }
 
 # inferior to one 
 :info is opcode=5 & sub_opc=0 & ssub_opc=7{
+    local tmp:4 = sp;
+    pop(tmp);
+    push((tmp < 1));
 }
 
 # not equal to zero 
 :neqz is opcode=5 & sub_opc=0 & ssub_opc=9{
+    local tmp:4 = sp;
+    pop(tmp);
+    push((tmp != 0));
 }
 
 # most significant bit inverted
 :msbi is opcode=5 & sub_opc=0 & ssub_opc=0xA{
+    local tmp:4 = sp;
+    pop(tmp);
+    tmp = tmp >> 0x1F;
+    push(~tmp);
 }
 
 # is positive 
 :ipos is opcode=5 & sub_opc=0 & ssub_opc=0xb{
+    local tmp:4 = sp;
+    pop(tmp);
+    push((tmp > 0));
 }
 
 # 0x5 --- floats
 
 # convert int to float 
 :citf is opcode=5 & sub_opc=1 & ssub_opc=0{
+    local tmp:4 = sp;
+    pop(tmp);
+    tmp=int2float(tmp);
+    push(tmp);
 }
 
 # convert to negative (float)
@@ -161,6 +224,10 @@ define pcodeop system_call;
 
 # ABS (float)
 :absf is opcode=5 & sub_opc=1 & ssub_opc=5{
+    local tmp:4 = sp;
+    pop(tmp);
+    tmp=abs(tmp);
+    push(tmp);
 }
 
 # inferior to zero (float)
@@ -195,69 +262,171 @@ define pcodeop system_call;
 
 # addition
 :add is opcode=6 & sub_opc=0 & ssub_opc=0{
+    local tmp:4 = sp;
+    local tmp2:4 = sp;
+    pop(tmp);
+    pop(tmp2);
+    push(tmp2+tmp);
 }
 
 # substraction
 :sub is opcode=6 & sub_opc=0 & ssub_opc=1{
+    local tmp:4 = sp;
+    local tmp2:4 = sp;
+    pop(tmp);
+    pop(tmp2);
+    push(tmp2-tmp);
 }
 
 # multiplication
 :mul is opcode=6 & sub_opc=0 & ssub_opc=2{
+    local tmp:4 = sp;
+    local tmp2:4 = sp;
+    pop(tmp);
+    pop(tmp2);
+    push(tmp2 * tmp);
 }
 
 # division
 :div is opcode=6 & sub_opc=0 & ssub_opc=3{
+    local tmp:4 = sp;
+    local tmp2:4 = sp;
+    pop(tmp);
+    pop(tmp2);
+    push(tmp2 s/ tmp);
 }
 
 # modulo
 :mod is opcode=6 & sub_opc=0 & ssub_opc=4{
+    local tmp:4 = sp;
+    local tmp2:4 = sp;
+    pop(tmp);
+    pop(tmp2);
+    push(tmp2 s% tmp);
 }
 
 # logical and
 :and is opcode=6 & sub_opc=0 & ssub_opc=5{
+    local tmp:4 = sp;
+    local tmp2:4 = sp;
+    pop(tmp);
+    pop(tmp2);
+    push(tmp2&tmp);
 }
 
 # logical or
 :or is opcode=6 & sub_opc=0 & ssub_opc=6{
+    local tmp:4 = sp;
+    local tmp2:4 = sp;
+    pop(tmp);
+    pop(tmp2);
+    push(tmp2|tmp);
 }
 
 # logical exclusive or
 :xor is opcode=6 & sub_opc=0 & ssub_opc=7{
+    local tmp:4 = sp;
+    local tmp2:4 = sp;
+    pop(tmp);
+    pop(tmp2);
+    push(tmp2^tmp);
 }
 
 # shift logical left
 :sll is opcode=6 & sub_opc=0 & ssub_opc=8{
+    local tmp:4 = sp;
+    local tmp2:4 = sp;
+    pop(tmp);
+    pop(tmp2);
+    push(tmp2<<(tmp&0x1F));
 }
 
 # shift right arithmetic
 :sra is opcode=6 & sub_opc=0 & ssub_opc=9{
+    local tmp:4 = sp;
+    local tmp2:4 = sp;
+    pop(tmp);
+    pop(tmp2);
+    push(tmp2>>(tmp&0x1F));
 }
 
 # not equal to zero (2 variable stack edition) 
-:neqzv is opcode=6 & sub_opc=0 & ssub_opc=0xA{
+:eqzv is opcode=6 & sub_opc=0 & ssub_opc=0xA{
+    local tmp:4 = sp;
+    local tmp2:4 = sp;
+    pop(tmp);
+    pop(tmp2);
+    local ret:4 = 1;
+    if(tmp!=0) goto <next>;
+        goto <end>;
+    <next>
+        if(tmp2==0) goto <end>;
+            ret=0;
+    <end>
+    push(ret);
 }
 
 # equal to zero (2 variable stack edition) 
-:eqzv is opcode=6 & sub_opc=0 & ssub_opc=0xB{
+:neqzv is opcode=6 & sub_opc=0 & ssub_opc=0xB{
+    local tmp:4 = sp;
+    local tmp2:4 = sp;
+    pop(tmp);
+    pop(tmp2);
+    local ret:4 = 1;
+    if(tmp==0) goto <next>;
+        goto <end>;
+    <next>
+        if(tmp2!=0) goto <end>;
+            ret=0;
+    <end>
+    push(ret);
 }
 
 
 # addition (float)
 :addf is opcode=6 & sub_opc=1 & ssub_opc=0{
+    local tmp:4 = sp;
+    local tmp2:4 = sp;
+    pop(tmp);
+    pop(tmp2);
+    push(tmp2 f+ tmp);
 }
 # substraction (float)
 :subf is opcode=6 & sub_opc=1 & ssub_opc=1{
+    local tmp:4 = sp;
+    local tmp2:4 = sp;
+    pop(tmp);
+    pop(tmp2);
+    push(tmp2 f- tmp);
 }
+
 # multiplication (float)
 :mulf is opcode=6 & sub_opc=1 & ssub_opc=2{
+    local tmp:4 = sp;
+    local tmp2:4 = sp;
+    pop(tmp);
+    pop(tmp2);
+    push(tmp2 f* tmp);
 }
 
 # division (float)
 :divf is opcode=6 & sub_opc=1 & ssub_opc=3{
+    local tmp:4 = sp;
+    local tmp2:4 = sp;
+    pop(tmp);
+    pop(tmp2);
+    push(tmp2 f/ tmp);
 }
 
 # modulo (float)
 :modf is opcode=6 & sub_opc=1 & ssub_opc=4{
+    local tmp:4 = sp;
+    local tmp2:4 = sp;
+    pop(tmp);
+    pop(tmp2);
+    # primitive doesn't exist, so we do with what we can
+    local ret:4 = fmod(tmp2, tmp);
+    push(ret);
 }
 
 # 0x6 =========
@@ -278,17 +447,19 @@ define pcodeop system_call;
 # jump 
 # TODO: verify first arg! 
 :jmp ope3, LABEL8 is opcode_ext=8 & LABEL8 & ope3 {
- call LABEL8;
+  call LABEL8;
 }
 
 
 # 0x9 =========
 
 :exit iarg is opcode=9 & ( ssub_opc=0 | ssub_opc=1 ) & iarg{
+    exit(iarg:1);
 }
 
 # return
 :ret is opcode=9 & ssub_opc=2{
+  return[ra];
 }
 
 # push cached -> push last cached pushed element to stack
@@ -302,19 +473,35 @@ define pcodeop system_call;
 
 # sinus; arg in radians
 :sin is opcode=9 & ssub_opc=6{
+    local tmp:4 = sp;
+    pop(tmp);
+    local ret:4 = sin(tmp);
+    push(ret);
 }
 
 # cosinus; arg in radians
 :cos is opcode=9 & ssub_opc=7{
+    local tmp:4 = sp;
+    pop(tmp);
+    local ret:4 = cos(tmp);
+    push(ret);
 }
 
 # degrees to radians
 # /!\ radians are [0-2pi] in this engine
 :degr is opcode=9 & ssub_opc=8{
+    local tmp:4 = sp;
+    pop(tmp);
+    local ret:4 = degrees_to_radians(tmp);
+    push(ret);
 }
 
 # radians to degree 
 :radd is opcode=9 & ssub_opc=9{
+    local tmp:4 = sp;
+    pop(tmp);
+    local ret:4 = radians_to_degrees(tmp);
+    push(ret);
 }
 
 
@@ -324,7 +511,7 @@ define pcodeop system_call;
 
 #syscall
 :syscall opesub,ope2 is opcode_ext=0xA & opesub & ope2 {
-    r0=system_call(opesub:4,ope2:4);
+    system_call(opesub:4,ope2:4);
 }
 
 :unkB is opcode=0xB {
