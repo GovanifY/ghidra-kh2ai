@@ -224,22 +224,25 @@
 
 \ISA{EXIT: EXIT}{r=exit value}{c}{d}{e}{f}{100100000000000r}
 
-\ISA{RET: RETurn}{b}{c}{d}{e}{f}{1001000000000010}
+% bitfields below are all verified
+\ISA{RET: RETurn}{b}{c}{d}{e}{f}{1000100100000000}
 
-\ISA{PUSHCA: PUSH CAched value}{b}{c}{d}{e}{f}{1001000000000011}
+\ISA{PUSHCA: PUSH CAched value}{b}{c}{d}{e}{f}{1100100100000000}
 
-\ISA{PUSHC: PUSH Copy}{b}{c}{d}{e}{f}{1001000000000101}
+\ISA{PUSHC: PUSH Copy}{b}{c}{d}{e}{f}{0100100100000001}
 
-\ISA{SIN: SINus}{b}{c}{d}{e}{f}{1001000000000110}
+\ISA{SIN: SINus}{b}{c}{d}{e}{f}{1000100100000001}
 
 \ISA{COS: COSinus}{Retrieves the latest value pushed to the stack and apply a
-cosinus onto it, pushing it to the stack}{None}{d}{e}{Radians are used as input. Radians used are modulo pi-2pi}{1001000000000111}
+cosinus onto it, pushing it to the stack}{None}{d}{e}{Radians are used as input.
+Radians used are modulo pi-2pi}{1100100100000001}
 
 \ISA{DEGR: DEGrees to Radians}{Retrieves the last element pushed to the stack
-and converts it to radians, pushing it to the stack}{None}{d}{e}{Radians used are modulo pi-2pi}{1001000000001000}
+and converts it to radians, pushing it to the stack}{None}{d}{e}{Radians used
+are modulo pi-2pi}{0000100100000010}
 
 \ISA{RADD: RADians to Degrees}{RADD}{Retrieves the last element pushed to the
-stack and converts it to degrees, pushing it to the stack}{None}{e}{Radians used are modulo pi-2pi}{1001000000001001}
+stack and converts it to degrees, pushing it to the stack}{None}{e}{Radians used are modulo pi-2pi}{0100100100000010}
 
 \ISA{SYSCALL: SYStem CALL}{b}{c}{d}{e}{f}{TODO}
 

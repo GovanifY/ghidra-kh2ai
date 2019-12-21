@@ -114,8 +114,12 @@ macro pop(v) {
 :unk2 is opcode_ext=2  {
 }
 
-# pops relative address from the stack and convert it to absolute
-:rela is opcode_ext=3  {
+# push and add to stack 
+:pushas ope2 is opcode_ext=3 & ope2{
+    local tmp:4 = sp;
+    pop(tmp);
+    tmp=tmp+ope2;
+    push(tmp);
 }
 
 :unk4 is opcode=4  {
@@ -138,7 +142,6 @@ macro pop(v) {
 :neg is opcode=5 & sub_opc=0 & ssub_opc=2{
     local tmp:4 = sp;
     pop(tmp);
-    tmp = tmp;
     tmp=-tmp;
     push(tmp);
 }
