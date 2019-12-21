@@ -23,11 +23,12 @@ define token instr_ext(32)
     ope3 = (6, 15)
     full_ext = (0, 31)
 # the label thingy
-    ope2 = (16, 31);
+    ope2 = (16, 31)
+    ope2s = (16, 31) signed;
 
 # relocated labels
-LABEL8: reloc is ope2	[ reloc = inst_start+(ope2*2)+4; ]	{ export *:4 reloc; }
-LABEL02: reloc is ope2	[ reloc = 0x10+(ope2*2); ]	{ export *:4 reloc; }
+LABEL8: reloc is ope2s	[ reloc = inst_start+(ope2s*2)+4; ]	{ export *:4 reloc; }
+LABEL02: reloc is ope2s	[ reloc = 0x10+(ope2s*2); ]	{ export *:4 reloc; }
 
 # if i'm not mistaken 0x1da4d8 1 and 2 uses two regs
 # one of them or more is a status reg so i'll have to double check how it's used
@@ -72,7 +73,7 @@ macro pop(v) {
 
 
 #push and add
-:push2_unk0 is opcode_ext=0 & sub_opc_ext=2 & opesub=0 ; opcode {
+:push2_unk0 is opcode_ext=0 & sub_opc_ext=2 & opesub=0  {
 }
 
 # push and add to pointer
@@ -111,7 +112,7 @@ macro pop(v) {
 }
 
 
-:unk2 is opcode_ext=2  {
+:unk2 is opcode_ext=2 ; opcode{
 }
 
 # push and add to stack 
