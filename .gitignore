@@ -7,4 +7,5 @@
 *.log
 *.pdf
 .gdb_history
-
+*.zip
+*.kate-swp
