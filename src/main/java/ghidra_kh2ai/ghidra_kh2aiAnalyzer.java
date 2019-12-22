@@ -34,7 +34,7 @@ public class ghidra_kh2aiAnalyzer extends AbstractAnalyzer {
 		// TODO: Name the analyzer and give it a description.
 
 		super("Function pointers resolver", "This analyzer scans KH2 AI files for "
-				+ "function pointers pushed as values and resolves them.", AnalyzerType.BYTE_ANALYZER);
+				+ "function pointers pushed as values and resolves them.", AnalyzerType.INSTRUCTION_ANALYZER);
 	}
 
 	@Override

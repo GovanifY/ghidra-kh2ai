@@ -32,17 +32,25 @@ import ghidra.app.util.opinion.AbstractLibrarySupportLoader;
 import ghidra.app.util.opinion.LoadSpec;
 import ghidra.framework.model.DomainObject;
 import ghidra.program.model.listing.Data;
+import ghidra.program.model.listing.Function;
+import ghidra.program.model.listing.FunctionManager;
 import ghidra.program.model.listing.Listing;
 import ghidra.program.model.listing.Program;
+import ghidra.program.model.symbol.Namespace;
+import ghidra.program.model.symbol.SourceType;
+import ghidra.program.model.symbol.Symbol;
+import ghidra.program.model.symbol.SymbolTable;
 import ghidra.program.model.util.CodeUnitInsertionException;
 import ghidra.util.Msg;
 import ghidra.util.exception.CancelledException;
+import ghidra.util.exception.InvalidInputException;
 import ghidra.util.task.TaskMonitor;
 import ghidra.program.model.data.Structure;
 import ghidra.program.model.data.StructureDataType;
 import ghidra.program.database.mem.FileBytes;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressOverflowException;
+import ghidra.program.model.address.AddressSet;
 import ghidra.program.model.data.DataType;
 import ghidra.program.model.data.DataTypeConflictException;
 import ghidra.program.model.data.DataUtilities;
@@ -87,10 +95,10 @@ public class ghidra_kh2aiLoader extends AbstractLibrarySupportLoader {
 			return d;
 		}
 		catch (CodeUnitInsertionException e) {
-			Msg.warn(this, "ELF data markup conflict at " + address);
+			Msg.warn(this, "KH2AI data markup conflict at " + address);
 		}
 		catch (DataTypeConflictException e) {
-			Msg.error(this, "ELF data type markup conflict:" + e.getMessage());
+			Msg.error(this, "KH2AI data type markup conflict:" + e.getMessage());
 		}
 		return null;
 	}
@@ -114,19 +122,78 @@ public class ghidra_kh2aiLoader extends AbstractLibrarySupportLoader {
 		}
 		return true;
 	}
+
+	public static final long arrToLong(byte[] b) 
+	{
+	    long l = 0;
+	    l |= b[3] & 0xFF;
+	    l <<= 8;
+	    l |= b[2] & 0xFF;
+	    l <<= 8;
+	    l |= b[1] & 0xFF;
+	    l <<= 8;
+	    l |= b[0] & 0xFF;
+	    return l;
+	}
+
+	// shamelessly stolen from Ghidra-Switch-Loader, creds to Adubbz
+    public void createOneByteFunction(Program program, String name, Address address, boolean isEntry) 
+    {
+        Function function = null;
+        try 
+        {
+            FunctionManager functionMgr = program.getFunctionManager();
+            function = functionMgr.getFunctionAt(address);
+            if (function == null) {
+                function = functionMgr.createFunction(null, address, new AddressSet(address), SourceType.IMPORTED);
+            }
+        }
+        catch (Exception e) 
+        {
+            Msg.error(this, "Error while creating function at " + address + ": " + e.getMessage());
+        }
+
+        try 
+        {
+            if (name != null) 
+            {
+                createSymbol(program, address, name, false, null);
+            }
+            if (isEntry) {
+                program.getSymbolTable().addExternalEntryPoint(address);
+            }
+        }
+        catch (Exception e) {
+            Msg.error(this, "Error while creating symbol " + name + " at " + address + ": " + e.getMessage());
+        }
+    }
+    
+    public Symbol createSymbol(Program program, Address addr, String name, boolean pinAbsolute, Namespace namespace) throws InvalidInputException
+    {
+        // TODO: At this point, we should be marking as data or code
+        SymbolTable symbolTable = program.getSymbolTable();
+        Symbol sym = symbolTable.createLabel(addr, name, namespace, SourceType.IMPORTED);
+        if (pinAbsolute && !sym.isPinned()) {
+            sym.setPinned(true);
+        }
+        return sym;
+    }
 	@Override
 	protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
 			Program program, TaskMonitor monitor, MessageLog log)
 			throws CancelledException, IOException {
 
-		Structure struct = new StructureDataType("header_item", 0);
+		// We create the header structure and add the static elements
+		Structure struct = new StructureDataType("header", 0);
 		struct.add(ghidra.app.util.bin.StructConverter.STRING, 0x10, "filename", null);
 		struct.add(ghidra.app.util.bin.StructConverter.DWORD, 4, "unk1", null);
 		struct.add(ghidra.app.util.bin.StructConverter.DWORD, 4, "unk2", null);
 		struct.add(ghidra.app.util.bin.StructConverter.DWORD, 4, "unk3", null);
 		
 		int off = 0;
+		ArrayList<Long> entrypoints = new ArrayList<Long>();
 		while (1==1) {
+			// gathers entrypoints/triggers into an arraylist and define the dynamic part of the header structure
 			byte[] first = provider.readBytes(0x1c+(off*8), 0x4);
 			byte[] second = provider.readBytes(0x1c+4+(off*8), 0x4);
 			if(checkZero(first) && checkZero(second)){
@@ -134,11 +201,18 @@ public class ghidra_kh2aiLoader extends AbstractLibrarySupportLoader {
 				struct.add(ghidra.app.util.bin.StructConverter.DWORD, 4, "end_entry", null);
 				break;
 			}
+			long fa = arrToLong(first);
+			long sa = arrToLong(second);
+			entrypoints.add(fa);
+			entrypoints.add(sa);
+			log.appendMsg("kh2ai: " + fa + " " + sa);
 			struct.add(ghidra.app.util.bin.StructConverter.DWORD, 4, "trigger"+(off+1), null);
 			struct.add(ghidra.app.util.bin.StructConverter.DWORD, 4, "entry"+(off+1), null);
 			off++;
 		}
+		log.appendMsg("kh2ai: " + entrypoints);
 
+		// we actually send the bytes over to the program and send off the header structure
 		MemoryBlockUtils mbu = new MemoryBlockUtils();
 		Address start = program.getAddressFactory().getDefaultAddressSpace().getAddress(0);
 		BinaryReader reader = new BinaryReader( provider, true );
@@ -146,11 +220,17 @@ public class ghidra_kh2aiLoader extends AbstractLibrarySupportLoader {
 		try {
 			MemoryBlockUtils.createInitializedBlock(program, false, "ram", start, fileBytes, 0, provider.length(), "", "KH2AI Header", true, true, true, log);
 		} catch (AddressOverflowException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		createData(program, start, program.getListing(), struct);
-		// TODO: Load the bytes from 'provider' into the 'program'.
+
+		// we create one byte functions so that the analyzer knows that there's something there, labelling 
+		// entrypoints in the format entry<trigger>
+		for (int i=0; i<entrypoints.size(); i+=2) {
+			long addr=0x10+(entrypoints.get(i+1)<<1);
+			Address entry = program.getAddressFactory().getDefaultAddressSpace().getAddress(addr);
+			createOneByteFunction(program, "entry"+entrypoints.get(i), entry, true); 
+		}
 	}
 
 	@Override
