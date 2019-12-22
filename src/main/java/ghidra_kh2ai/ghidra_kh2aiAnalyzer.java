@@ -20,9 +20,11 @@ import ghidra.util.Msg;
 import ghidra.app.services.AnalyzerType;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.framework.options.Options;
+import ghidra.program.disassemble.Disassembler;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressSet;
 import ghidra.program.model.address.AddressSetView;
+import ghidra.program.model.listing.CodeUnit;
 import ghidra.program.model.listing.Function;
 import ghidra.program.model.listing.FunctionManager;
 import ghidra.program.model.listing.Instruction;
@@ -37,11 +39,17 @@ import ghidra.program.model.symbol.SymbolTable;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.exception.InvalidInputException;
 import ghidra.util.task.TaskMonitor;
+import ghidra.util.task.TaskMonitorAdapter;
 import ghidra.program.model.lang.Processor;
+import ghidra.app.cmd.comments.AppendCommentCmd;
+import ghidra.app.plugin.core.analysis.AutoAnalysisManager;
+import ghidra.app.plugin.core.function.FunctionAnalyzer;
 /**
  * TODO: Provide class-level documentation that describes what this analyzer does.
  */
 public class ghidra_kh2aiAnalyzer extends AbstractAnalyzer {
+
+    public boolean new_pass=false;
 
 	public ghidra_kh2aiAnalyzer() {
 		super("Function pointers resolver", "This analyzer scans KH2 AI files for "
@@ -72,14 +80,15 @@ public class ghidra_kh2aiAnalyzer extends AbstractAnalyzer {
 
 
     // shamelessly stolen from Ghidra-Switch-Loader, creds to Adubbz
-    public void createOneByteFunction(Program program, String name, Address address, boolean isEntry) {
+    public boolean createOneByteFunction(Program program, String name, Address address, boolean isEntry) {
         Function function = null;
+        boolean newf = false;
         try {
             FunctionManager functionMgr = program.getFunctionManager();
             function = functionMgr.getFunctionAt(address);
             if (function == null) {
                 function = functionMgr.createFunction(null, address, new AddressSet(address), SourceType.IMPORTED);
-            }
+            } else { newf = true; }
         } catch (Exception e) {
             Msg.error(this, "Error while creating function at " + address + ": " + e.getMessage());
         }
@@ -94,6 +103,7 @@ public class ghidra_kh2aiAnalyzer extends AbstractAnalyzer {
         } catch (Exception e) {
             Msg.error(this, "Error while creating symbol " + name + " at " + address + ": " + e.getMessage());
         }
+        return newf;
     }
 
     public Symbol createSymbol(Program program, Address addr, String name, boolean pinAbsolute, Namespace namespace)
@@ -107,14 +117,17 @@ public class ghidra_kh2aiAnalyzer extends AbstractAnalyzer {
         return sym;
     }
 
-
-	public void getValueLabel(Program program, Instruction instruction) {
+    
+	public void getValueLabel(Program program, Instruction instruction, Listing listing) {
 	    Address test = instruction.getAddress();
 	    Scalar val = (Scalar)(instruction.getOpObjects(0)[0]);
 	    if(val.getValue()!=0) {
 	        long reloc=0x10+(val.getValue()<<1);
 	        Address rel = program.getAddressFactory().getDefaultAddressSpace().getAddress(reloc);
-	        createOneByteFunction(program, "test"+reloc, rel, true);
+	        if (createOneByteFunction(program, null, rel, true) == false) {new_pass=true;}
+	        listing.setComment(test, CodeUnit.EOL_COMMENT, "pointer to: "+Long.toHexString(reloc));
+	        Disassembler disassembler = Disassembler.getDisassembler(program, TaskMonitorAdapter.DUMMY_MONITOR, null);
+	        disassembler.disassemble(rel, null);
 	    }
 	}
 	@Override
@@ -122,6 +135,7 @@ public class ghidra_kh2aiAnalyzer extends AbstractAnalyzer {
 			throws CancelledException {
 		// TODO: Perform analysis when things get added to the 'program'.  Return true if the
 		// analysis succeeded.
+	    new_pass=false;
 	    Listing listing = program.getListing( );
 	    InstructionIterator instructionIterator = listing.getInstructions( set, true );
 	    while ( instructionIterator.hasNext( ) ) {
@@ -139,13 +153,13 @@ public class ghidra_kh2aiAnalyzer extends AbstractAnalyzer {
 	                Scalar op1= new Scalar(32, 1);
 	                Scalar op2= new Scalar(32, 6);
 	                
-	                int args=8;
+	                int args=8+1;
 	                if (arg1.equals(op1) && arg2.equals(op2)) {
 	                    Instruction copy = instruction;
 	                    while(args!=0) {
 	                            copy=copy.getPrevious();
 	                            if (copy.getMnemonicString().contains("push.v")) {
-	                                getValueLabel(program, copy);
+	                                getValueLabel(program, copy, program.getListing());
 	                                int b=0; 
 	                                args--;
 	                            }
@@ -153,7 +167,13 @@ public class ghidra_kh2aiAnalyzer extends AbstractAnalyzer {
 	                }
 	            }
 	    }
+	    // kind of a bottleneck but note like kh2 ai is going to be more than 100kb ever
+	    if(new_pass ) {
+	        // we added a bunch of functions, might be a good idea to do another pass
+	        AutoAnalysisManager mgr = AutoAnalysisManager.getAnalysisManager(program);
+	        mgr.reAnalyzeAll(null);
+	    }
 
-		return false;
+		return true;
 	}
 }
