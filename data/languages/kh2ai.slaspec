@@ -1,4 +1,6 @@
 define endian=little;
 define alignment=2;
 
+@include "base.sinc"
+@include "syscalls.sinc"
 @include "kh2ai.sinc"

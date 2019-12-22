@@ -1,0 +1,35 @@
+define pcodeop system_call1_6;
+
+macro syscall1_6() {
+    local tmp:4 = sp;
+    pop(tmp);
+    local tmp2:4 = sp;
+    pop(tmp2);
+    local tmp3:4 = sp;
+    pop(tmp3);
+    local tmp4:4 = sp;
+    pop(tmp4);
+    local tmp5:4 = sp;
+    pop(tmp5);
+    local tmp6:4 = sp;
+    pop(tmp6);
+    local tmp7:4 = sp;
+    pop(tmp7);
+    local tmp8:4 = sp;
+    pop(tmp8);
+    local tmp9:4 = sp;
+    pop(tmp9);
+    local tmp10:4 = sp;
+    pop(tmp10);
+    
+    to_address(tmp2);
+    to_address(tmp3);
+    to_address(tmp4);
+    to_address(tmp5);
+    to_address(tmp6);
+    to_address(tmp7);
+    to_address(tmp8);
+    to_address(tmp9);
+    to_address(tmp10);
+    system_call1_6(tmp, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7, tmp8, tmp9, tmp10); 
+}

@@ -1,0 +1,73 @@
+define space ram type=ram_space size=4 wordsize=1 default;
+define space register type=register_space size=4;
+
+# this is obviously wrong and will need to be edited when i understand how
+# internal regs are used besides stack
+define register offset=0 size=4 [
+    r0 r1 r2 r3 r4 r5 r6 
+    r7 r8 pc sp ra broken
+];
+
+define token instr(16)
+    opcode = (0, 3)
+    ssub_opc = (6, 15)
+    sub_opc = (4, 5)
+    iarg = (14, 15);
+
+define token instr_ext(32)
+    opcode_ext = (0, 3)
+    sub_opc_ext = (4, 5)
+    opesub = (6, 7)
+    _opesub = (6, 7)
+    rn = (6, 7)
+    ope3 = (6, 15)
+    full_ext = (0, 31)
+    full_rel = (0, 31) signed
+# the label thingy
+    ope2 = (16, 31)
+    _ope2 = (16, 31)
+    ope2s = (16, 31) signed;
+
+# relocated labels
+LABEL8: reloc is ope2s	[ reloc = inst_start+(ope2s*2)+4; ]	{ export *:4 reloc; }
+LABEL02: reloc is ope2s	[ reloc = 0x10+(ope2s*2); ]	{ export *:4 reloc; }
+#LABELV: reloc is full_rel	[ reloc = 0x10+(full_rel*2); ]	{ export *:4 reloc; }
+NOT_LABEL03: reloc is ope2s	[ reloc = 0x10+(ope2s*2); ]	{ tmp:4 = reloc:4; export tmp; }
+#CLABEL: reloc is full_ext	[ reloc = 0x10+(full_ext*2); ]	{ export *:4 reloc; }
+
+# if i'm not mistaken 0x1da4d8 1 and 2 uses two regs
+# one of them or more is a status reg so i'll have to double check how it's used
+attach variables [ rn ] [ r0 r1 r2 r3 ];
+
+# exit values
+attach values [ iarg ] [ 1 2 _ _ ];
+
+
+define pcodeop system_call;
+define pcodeop fmod;
+define pcodeop exit;
+define pcodeop cos;
+define pcodeop sin;
+define pcodeop radians_to_degrees;
+define pcodeop degrees_to_radians;
+
+
+macro push(v) {
+    *[ram]:4 sp = v;
+    sp = sp + 4;
+}
+
+macro pop(v) {
+    sp = sp - 4;
+    v = *[ram]:4 sp;
+}
+
+macro to_address(v) {
+    if(v!=0) goto <address>;
+        v=0;
+        goto <end>;
+    <address>
+        v=0x10+(v*2);
+    <end>
+}
+

@@ -69,22 +69,11 @@ t3[right]=tmp-4
 
 =============================================================================================================
 TODO:
-0x0: reverse unknowns + fix oush label vs val
-0x1: is that a pop? also args
-0x2: to reverse
-0x4: to reverse
+0x0: reverse unknowns + fix push label vs val
+0x1: pop, reverse unknowns(get_arg)
+0x2: to reverse(FUN_002fdd68)
+0x4: to reverse(FUN_002fdd68)
 0xB: to reverse
 -----
 0x8: figure out first arg of jmp, offset?
 0x7: figure out args and diff between 3 jmp 
-
-==============
-SOMETHING IS UNALIGNED IN ONE OF THOSE OPCODES!!!!:
-push3_unk0,push2_unk0,push(not label), unk2,unk4,rela,jmp7_unk{1_2}
-
-
-push3_unk0: ext
-push2_unk0: to check
-unk2: most likely not
-unk4: most likely not
-rela: 

@@ -57,6 +57,9 @@
 }
 
 \newcommand{\ISA}[7]{
+\StrLen{#4}[\exclen]
+\StrLen{#6}[\notelen]
+
 \section{\huge #1}
 \Lineless \\
 \textbf{Operation Code} \\ \\
@@ -65,12 +68,16 @@
 \hspace*{0.5cm} #2 \\ \\
 \textbf{Description} \\ 
 \hspace*{0.5cm} #3  \\ \\
+\ifthenelse{\equal{\exclen}{0}}{}{
 \textbf{Exceptions} \\ 
 \hspace*{0.5cm} #4 \\ \\
+}
 \textbf{Operations} \\ 
 \hspace*{0.5cm} #5 \\ \\
+\ifthenelse{\equal{notelen}{0}}{}{
 \textbf{Programming notes} \\ 
 \hspace*{0.5cm} #6 \\ \\
+}
 \newpage
 }
 
@@ -129,6 +136,13 @@
 
 \Main{Kh2Ai ISA}{\version}
 
+Blabla 
+It is also worthy to note that some operations that otherwise do the same thing
+are given a different mnemonic depending on the context to be easier to write an
+assembler. An example of this can be seen in the PUSH.V and PUSH.L operations,
+which, while they both push a value to the stack, one of them is 48bits long and
+pushes a raw value while the other is 32bits long and does a relocation on the
+encoded address before pushing it, making the different naming needed.
 
 \Chapter{Notational Convention}
 
@@ -148,101 +162,116 @@
 
 \ISA{POP: pop}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{CFTI: Convert Float To Int}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{CFTI: Convert Float To Int}{CFTI}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{NEG: convert to NEGative signed number}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{NEG: convert to NEGative signed number}{NEG}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{INV: INVert an unsigned value}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{INV: INVert an unsigned value}{INV}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{EQZ: conditional is EQual Zero}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{EQZ: conditional is EQual Zero}{EQZ}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{ABS: convert to ABSolute value}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{ABS: convert to ABSolute value}{ABS}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{MSB: return Most Significant Bit}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{MSB: return Most Significant Bit}{MSB}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{INFO: conditional INFerior to One}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{INFO: conditional INFerior to One}{INFO}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{NEQZ: conditional Not Equal to Zero}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{NEQZ: conditional Not Equal to Zero}{NEQZ}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{MSB: return Most Significant Bit Inverted}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{MSBI: return Most Significant Bit Inverted}{MSBI}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{IPOS: Conditional Is POSitive}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{IPOS: Conditional Is POSitive}{IPOS}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{CITF: Convert Int To Float}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{CITF: Convert Int To Float}{CITF}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{NEGF: convert to NEGative Float}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{NEGF: convert to NEGative Float}{NEGF}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{ABS: convert to ABSolute Float}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{ABS: convert to ABSolute Float}{ABS}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{INFZF: Conditional INFerior to Zero Float}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{INFZF: Conditional INFerior to Zero Float}{INFZF}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{INFOEZF: Conditional INFerior Or Equal to Zero Float}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{INFOEZF: Conditional INFerior Or Equal to Zero Float}{INFOEZF}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{EQZF: conditional is EQual Zero Float}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{EQZF: conditional is EQual Zero Float}{EQZF}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{NEQZF: conditional Not Equal to Zero Float}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{NEQZF: conditional Not Equal to Zero Float}{NEQZF}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{SUPOEZF: conditional SUPerior Or Equal to Zero Float}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{SUPOEZF: conditional SUPerior Or Equal to Zero Float}{SUPOEZF}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{SUPZF: conditional SUPerior to Zero Float}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{SUPZF: conditional SUPerior to Zero Float}{SUPZF}{c}{d}{e}{f}{01000000010010010000111111010000}
 
-\ISA{ADD: ADDition}{b}{c}{d}{e}{f}{11000010000000001}
+\ISA{ADD: ADDition}{ADD}{c}{d}{e}{f}{11000010000000001}
 
-\ISA{SUB: SUBstraction}{b}{c}{d}{e}{f}{11000010000000001}
+\ISA{SUB: SUBstraction}{SUB}{c}{d}{e}{f}{11000010000000001}
 
-\ISA{MUL: MULtiplication}{b}{c}{d}{e}{f}{11000010000000010}
+\ISA{MUL: MULtiplication}{MUL}{c}{d}{e}{f}{11000010000000010}
 
-\ISA{DIV: DIVision}{b}{c}{d}{e}{f}{11000010000000011}
+\ISA{DIV: DIVision}{DIV}{c}{d}{e}{f}{11000010000000011}
 
-\ISA{MOD: MODulo}{b}{c}{d}{e}{f}{11000010000000100}
+\ISA{MOD: MODulo}{MOD}{c}{d}{e}{f}{11000010000000100}
 
-\ISA{AND: logical AND}{b}{c}{d}{e}{f}{11000010000000101}
+\ISA{AND: logical AND}{AND}{c}{d}{e}{f}{11000010000000101}
 
-\ISA{OR: logical OR}{b}{c}{d}{e}{f}{11000010000000110}
+\ISA{OR: logical OR}{OR}{c}{d}{e}{f}{11000010000000110}
 
-\ISA{XOR: logical eXclusive OR}{b}{c}{d}{e}{f}{11000010000000111}
+\ISA{XOR: logical eXclusive OR}{XOR}{c}{d}{e}{f}{11000010000000111}
 
-\ISA{SLL: Shift Logical Left}{b}{c}{d}{e}{f}{11000010000001000}
+\ISA{SLL: Shift Logical Left}{SLL}{c}{d}{e}{f}{11000010000001000}
 
-\ISA{SRA: Shift Right Arithmetic}{b}{c}{d}{e}{f}{11000010000001001}
+\ISA{SRA: Shift Right Arithmetic}{SRA}{c}{d}{e}{f}{11000010000001001}
 
-\ISA{NEQZV: conditional Not EQual to Zero with stack Values}{b}{c}{d}{e}{f}{1100001000001010}
+\ISA{NEQZV: conditional Not EQual to Zero with stack Values}{NEQZV}{c}{d}{e}{f}{1100001000001010}
 
-\ISA{EQZV: conditional EQual to Zero with stack Values}{b}{c}{d}{e}{f}{11000010000001011}
+\ISA{EQZV: conditional EQual to Zero with stack Values}{EQZV}{c}{d}{e}{f}{11000010000001011}
 
-\ISA{ADDF: ADDition with Float values}{b}{c}{d}{e}{f}{11000010000000000}
+\ISA{ADDF: ADDition with Float values}{ADDF}{Retrieves the last 2 values pushed on
+to the stack and apply an addition onto them, pushing back the result to the
+stack.}{d}{e}{This function exclusively deals with floating numbers}{11000010000000000}
 
-\ISA{SUBF: SUBstraction with Float values}{b}{c}{d}{e}{f}{11000010000000001}
+\ISA{SUBF: SUBstraction with Float values}{SUBF}{Retrieves the last 2 values pushed on
+to the stack and apply a substraction onto them, pushing back the result to the
+stack.}{}{}{This function exclusively deals with floating numbers}{11000010000000001}
 
-\ISA{MULF: MULtiplication with Float values}{b}{c}{d}{e}{f}{11000010000000010}
+\ISA{MULF: MULtiplication with Float values}{MULF}{Retrieves the last 2 values pushed on
+to the stack and apply a multiplication onto them, pushing back the result to the
+stack.}{}{}{This function exclusively deals with floating numbers}{11000010000000010}
 
-\ISA{DIVF: DIVision with Float values}{b}{c}{d}{e}{f}{11000010000000011}
+\ISA{DIVF: DIVision with Float values}{DIVF}{Retrieves the last 2 values pushed on
+to the stack and apply a division onto them, pushing back the result to the
+stack.}{}{}{This function exclusively deals with floating numbers}{11000010000000011}
 
-\ISA{MODF: MODulo with Float values}{b}{c}{d}{e}{f}{11000010000000100}
+\ISA{MODF: MODulo with Float values}{MODF}{Retrieves the last 2 values pushed on
+to the stack and apply a modulo onto them, pushing back the result to the
+stack.}{}{}{This function exclusively deals with floating numbers}{11000010000000100}
 
 \ISA{JMP: JuMP}{b}{c}{d}{e}{f}{TODO}
 
-\ISA{EXIT: EXIT}{r=exit value}{c}{d}{e}{f}{100100000000000r}
+\ISA{EXIT: EXIT}{EXIT ri}{Completely stops the execution flow of the AI Parser
+with return code ri}{}{}{}{100100000000000r}
 
 % bitfields below are all verified
-\ISA{RET: RETurn}{b}{c}{d}{e}{f}{1000100100000000}
+\ISA{RET: RETurn}{RET}{Stops the execution flow and return back to the last
+saved function call}{}{}{}{1000100100000000}
 
-\ISA{PUSHCA: PUSH CAched value}{b}{c}{d}{e}{f}{1100100100000000}
+\ISA{PUSH.CA: PUSH CAched value}{PUSHCA}{c}{d}{e}{f}{1100100100000000}
 
-\ISA{PUSHC: PUSH Copy}{b}{c}{d}{e}{f}{0100100100000001}
+\ISA{PUSH.C: PUSH Copy}{PUSHC}{c}{d}{e}{f}{0100100100000001}
 
-\ISA{SIN: SINus}{b}{c}{d}{e}{f}{1000100100000001}
+\ISA{SIN: SINus}{SIN}{Retrieves the latest value pushed to the stack and apply a
+sinus onto it, pushing it to the stack}{}{}{Radians are used as input.
+Radians used are modulo $[\pi-2\pi]$}{1000100100000001}
 
-\ISA{COS: COSinus}{Retrieves the latest value pushed to the stack and apply a
-cosinus onto it, pushing it to the stack}{None}{d}{e}{Radians are used as input.
-Radians used are modulo pi-2pi}{1100100100000001}
+\ISA{COS: COSinus}{COS}{Retrieves the latest value pushed to the stack and apply a
+cosinus onto it, pushing it to the stack}{}{}{Radians are used as input.
+Radians used are modulo $[\pi-2\pi]$}{1100100100000001}
 
-\ISA{DEGR: DEGrees to Radians}{Retrieves the last element pushed to the stack
-and converts it to radians, pushing it to the stack}{None}{d}{e}{Radians used
-are modulo pi-2pi}{0000100100000010}
+\ISA{DEGR: DEGrees to Radians}{DEGR}{Retrieves the last element pushed to the stack
+and converts it to radians, pushing it to the stack}{}{}{Radians used
+are modulo $[\pi-2\pi]$}{0000100100000010}
 
 \ISA{RADD: RADians to Degrees}{RADD}{Retrieves the last element pushed to the
-stack and converts it to degrees, pushing it to the stack}{None}{e}{Radians used are modulo pi-2pi}{0100100100000010}
+stack and converts it to degrees, pushing it to the stack}{}{}
+{Radians used are modulo $[\pi-2\pi]$}{0100100100000010}
 
 \ISA{SYSCALL: SYStem CALL}{b}{c}{d}{e}{f}{TODO}
 
@@ -254,5 +283,27 @@ What is a system call blabla.
 None of them are currently documented, they are available at address 0x0034dd00
 of SLPM\_666.75,  and there is 738 elements if I'm not mistaken. Either try to
 guess their arguments 
+
+
+\Chapter{Known issues}
+As this is very much a work-in-progress project, much of the ISA has yet to
+stabilize before getting a stable documentation and some issues still exist. You
+will find below some of those.
+
+\section{Syscall function pointers doesn't get recognized}
+
+Sometimes, a syscall will take function pointers as arguments using data. KH2AI
+has an opcode reserved for pushing to the stack pointers but the data opcode is
+preferred due to the syscall treating the address, and as such being able to
+recognize if an address is NULL, while the parser would relocate directly the
+address and make it impossible for the syscall to know if a pointer was NULL.
+Unfortunately for us, this currently means that it is impossible for ghidra to
+distinguish some function pointers from data, and will be reworked in a further
+release.
+It is currently encouraged to create the functions yourself inside ghidra to
+continue analysis. The address relocation formula is $16+(addr<<1)$ . This will
+be fixed in a further release by creating a new analysis plugin, but is
+currently out-of-scope for the initial release.
+
 
 \end{document}

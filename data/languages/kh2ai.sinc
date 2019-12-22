@@ -1,62 +1,4 @@
 
-define space ram type=ram_space size=4 wordsize=1 default;
-define space register type=register_space size=4;
-
-# this is obviously wrong and will need to be edited when i understand how
-# internal regs are used besides stack
-define register offset=0 size=4 [
-    r0 r1 r2 r3 r4 r5 r6 
-    r7 r8 pc sp ra broken
-];
-
-define token instr(16)
-    opcode = (0, 3)
-    ssub_opc = (6, 15)
-    sub_opc = (4, 5)
-    iarg = (14, 15);
-
-define token instr_ext(32)
-    opcode_ext = (0, 3)
-    sub_opc_ext = (4, 5)
-    opesub = (6, 7)
-    rn = (6, 7)
-    ope3 = (6, 15)
-    full_ext = (0, 31)
-# the label thingy
-    ope2 = (16, 31)
-    ope2s = (16, 31) signed;
-
-# relocated labels
-LABEL8: reloc is ope2s	[ reloc = inst_start+(ope2s*2)+4; ]	{ export *:4 reloc; }
-LABEL02: reloc is ope2s	[ reloc = 0x10+(ope2s*2); ]	{ export *:4 reloc; }
-
-# if i'm not mistaken 0x1da4d8 1 and 2 uses two regs
-# one of them or more is a status reg so i'll have to double check how it's used
-attach variables [ rn ] [ _ r0 r1 _ ];
-
-# exit values
-attach values [ iarg ] [ 1 2 _ _ ];
-
-
-define pcodeop system_call;
-define pcodeop fmod;
-define pcodeop exit;
-define pcodeop cos;
-define pcodeop sin;
-define pcodeop radians_to_degrees;
-define pcodeop degrees_to_radians;
-
-
-macro push(v) {
-    *[ram]:4 sp = v;
-    sp = sp + 4;
-}
-
-macro pop(v) {
-    sp = sp - 4;
-    v = *[ram]:4 sp;
-}
-
 #
 #
 # Instructions
@@ -67,9 +9,19 @@ macro pop(v) {
 # 0x1 =========
 
 # standard push
-:push full_ext is opcode=0 & ( sub_opc=1 | sub_opc=0 ) ; full_ext {
+# so this is how the game does it, it pushes a value, normal stuff. THE. THING.
+# IS. it can sometime push an address too, that a syscall relocates. so we're
+# going to have to be hacky to get the entire file to be analyzed. sad day.
+
+# ssub_opc is always equal 0, we just define it in a more specific fashion to
+# prefer push.v over _push.v, which is dynamically created by the analyzer
+:push.v full_ext is opcode=0 & ( sub_opc=1 | sub_opc=0 ) ; full_ext {
     push(full_ext:4);
 }
+
+#:pushc CLABEL is opcode=0 & ( sub_opc=1 | sub_opc=0 ) ; CLABEL & full_ext {
+#    push(full_ext:4);
+#}
 
 
 #push and add
@@ -77,14 +29,13 @@ macro pop(v) {
 }
 
 # push and add to pointer
-:pushap rn, ope2 is opcode_ext=0 & sub_opc_ext=2 & opesub=1 & ope2 & rn {
+:push.ap rn, ope2 is opcode_ext=0 & sub_opc_ext=2 & opesub=1 & ope2 & rn {
 }
 
 :push2_unk2  is opcode_ext=0 & sub_opc_ext=2 & opesub=2 {
 }
 
-:push LABEL02 is opcode_ext=0 & sub_opc_ext=2 & opesub=3 & LABEL02 {
-# this is wrong! it pushes the pointer, not the data
+:push.l LABEL02 is opcode_ext=0 & sub_opc_ext=2 & opesub=3 & LABEL02 {
     push(LABEL02:4);
 }
 
@@ -93,30 +44,52 @@ macro pop(v) {
 }
 
 #push and add
-:pusha rn, ope2 is opcode_ext=0 & sub_opc_ext=3 & opesub=1 & ope2 & rn {
+:push.a rn, ope2 is opcode_ext=0 & sub_opc_ext=3 & opesub=1 & ope2 & rn {
 }
 
 #push and add
 :push3_unk2 is opcode_ext=0 & sub_opc_ext=3 & opesub=2 {
 }
 
-#push and add
-:push3_unk3 is opcode_ext=0 & sub_opc_ext=3 & opesub=3 {
+# never used in practice... push pointer as data and not label
+:push.ln NOT_LABEL03 is opcode_ext=0 & sub_opc_ext=3 & opesub=3 & NOT_LABEL03 {
+    push(NOT_LABEL03);
 }
 
 # 0x1 =========
 
 
 # sometimes it has arguments, to check!
-:pop is opcode_ext=1 {
+# this is a pop_at!!!!!
+:popat_unk0 is opcode_ext=1 & ope3=0 & ope2 & rn {
+}
+
+:popat rn, ope2 is opcode_ext=1 & ope3=1 & ope2 & rn {
+}
+
+:popat_unk2 is opcode_ext=1 & ope3=2 & ope2 & rn {
+}
+
+# no shit this isn't used in practice
+:popat LABEL02 is opcode_ext=1 & ope3=3 & LABEL02 {
+    push(LABEL02:4);
 }
 
 
-:unk2 is opcode_ext=2 ; opcode{
+:unk2_unk0 is opcode_ext=2 & ope3=0; opcode{
+}
+
+:unk2_unk1 is opcode_ext=2 & ope3=1; opcode{
+}
+
+:unk2_unk2 is opcode_ext=2 & ope3=2; opcode{
+}
+
+:unk2_unk3 is opcode_ext=2 & ope3=3; opcode{
 }
 
 # push and add to stack 
-:pushas ope2 is opcode_ext=3 & ope2{
+:push.as ope2 is opcode_ext=3 & ope2{
     local tmp:4 = sp;
     pop(tmp);
     tmp=tmp+ope2;
@@ -486,11 +459,11 @@ macro pop(v) {
 
 # push cached -> push last cached pushed element to stack
 # don't ask me, this entire ISA is cursed
-:pushca is opcode=9 & ssub_opc=3{
+:push.ca is opcode=9 & ssub_opc=3{
 }
 
 # push copy -> push last pushed element to stack
-:pushc is opcode=9 & ssub_opc=5{
+:push.c is opcode=9 & ssub_opc=5{
 }
 
 # sinus; arg in radians
@@ -531,7 +504,20 @@ macro pop(v) {
 
 # 0x9 =========
 
-#syscall
+#:syscall opesub,ope2 is opcode_ext=0xA & opesub & ope2 {
+#    if (opesub:4==1) goto <table1>;
+#    <table1>
+#        if (ope2:4==6) goto <_syscall1_6>;
+#    # unknown args or no changes necessary
+#    system_call(opesub:4,ope2:4);
+#    goto <done>;
+#    <_syscall1_6>
+#        syscall1_6();
+#        goto <done>;
+#    <done>
+#}
+
+
 :syscall opesub,ope2 is opcode_ext=0xA & opesub & ope2 {
     system_call(opesub:4,ope2:4);
 }
