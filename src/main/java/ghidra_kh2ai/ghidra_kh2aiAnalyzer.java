@@ -133,9 +133,9 @@ public class ghidra_kh2aiAnalyzer extends AbstractAnalyzer {
 	@Override
 	public boolean added(Program program, AddressSetView set, TaskMonitor monitor, MessageLog log)
 			throws CancelledException {
-		// TODO: Perform analysis when things get added to the 'program'.  Return true if the
-		// analysis succeeded.
+	    // we don't want to enter an infinite loop of new passes
 	    new_pass=false;
+
 	    Listing listing = program.getListing( );
 	    InstructionIterator instructionIterator = listing.getInstructions( set, true );
 	    while ( instructionIterator.hasNext( ) ) {
@@ -146,21 +146,19 @@ public class ghidra_kh2aiAnalyzer extends AbstractAnalyzer {
 
 	            String mnemonicString = instruction.getMnemonicString( );
 	            // i have NO CLUE why but some syscalls incorrectly report a 2 item array...
-	            if (mnemonicString.contains("syscall") && instruction.getInputObjects().length==3) {
-	                Object[] a = instruction.getInputObjects();
-	                Scalar arg1 = (Scalar)a[1];
-	                Scalar arg2 = (Scalar)a[2];
-	                Scalar op1= new Scalar(32, 1);
-	                Scalar op2= new Scalar(32, 6);
+	            if (mnemonicString.contains("syscall")) {
+	                Scalar arg1 = (Scalar)instruction.getOpObjects(0)[0];
+	                Scalar arg2 = (Scalar)instruction.getOpObjects(1)[0];
 	                
-	                int args=8+1;
-	                if (arg1.equals(op1) && arg2.equals(op2)) {
+	                // yeah ok this might be a _little_ hardcoded right now but hey, it works
+	                // TODO: store syscalls/args positions and pointers in a resource file and do that automagically
+	                if (arg1.getValue()==1 && arg2.getValue()==6) {
 	                    Instruction copy = instruction;
+	                    int args=8+1;
 	                    while(args!=0) {
 	                            copy=copy.getPrevious();
 	                            if (copy.getMnemonicString().contains("push.v")) {
 	                                getValueLabel(program, copy, program.getListing());
-	                                int b=0; 
 	                                args--;
 	                            }
 	                    }
