@@ -32,26 +32,8 @@
   <default_proto>
     <prototype name="__stdcall" extrapop="0" stackshift="0">
       <input>
-        <pentry minsize="1" maxsize="4" extension="inttype">
-          <register name="r1"/>
-        </pentry>
-        <pentry minsize="1" maxsize="4" extension="inttype">
-          <register name="r2"/>
-        </pentry>
-        <pentry minsize="1" maxsize="4" extension="inttype">
-          <register name="r3"/>
-        </pentry>
-        <pentry minsize="1" maxsize="4" extension="inttype">
-          <register name="r4"/>
-        </pentry>
-        <pentry minsize="1" maxsize="500" align="4">
-          <addr offset="0" space="stack"/>
-        </pentry>
       </input>
       <output>
-        <pentry minsize="1" maxsize="4" extension="inttype">
-          <register name="r0"/>
-        </pentry>
       </output>
       <unaffected>
         <register name="r5"/>
