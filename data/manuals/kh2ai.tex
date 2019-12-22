@@ -146,11 +146,23 @@ encoded address before pushing it, making the different naming needed.
 
 \Chapter{Notational Convention}
 
+\section{Instruction Format of Each Instruction} 
+The description of each instruction uses the following format. 
 
-\section{New section}
-
-\Blindtext
-\Blindtext
+\section{Mnemonic}
+Page headings show the instruction mnemonic and a brief description of the function, and the MIPS architecture level.
+\section{Instruction Encoding} 
+This picture illustrates the bit formats of an instruction word. 
+\section{Format} 
+This section indicates the instruction formats for the assembler. Lower case indicates variables, corresponding to variable fields in the encoding picture. 
+\section{Description Section} 
+This section describes the instruction function and operation. 
+\section{Exception Section} 
+This section shows the exceptions that can be caused by the instructions. 
+\section{Operation Section}
+This section describes the instruction operations in SLEIGH. You can refer to SLEIGH's own documentation for its notational conventions.
+\section{Programming Notes Section}
+This section shows the supplementary information about programming when using the instruction.
 
 \Chapter{Instruction Set}
 
@@ -290,20 +302,18 @@ As this is very much a work-in-progress project, much of the ISA has yet to
 stabilize before getting a stable documentation and some issues still exist. You
 will find below some of those.
 
-\section{Syscall function pointers doesn't get recognized}
+\section{Notable amount of undocumented instructions}
+While the disassemblers knows the size of all instructions and is able to get a
+complete unbroken output, some functions are still partly or fully unknown and
+as such cannot be assembled yet, nor are they understood by the decompiler. Such
+instructions will most likely have "unk" in their name.
 
-Sometimes, a syscall will take function pointers as arguments using data. KH2AI
-has an opcode reserved for pushing to the stack pointers but the data opcode is
-preferred due to the syscall treating the address, and as such being able to
-recognize if an address is NULL, while the parser would relocate directly the
-address and make it impossible for the syscall to know if a pointer was NULL.
-Unfortunately for us, this currently means that it is impossible for ghidra to
-distinguish some function pointers from data, and will be reworked in a further
-release.
-It is currently encouraged to create the functions yourself inside ghidra to
-continue analysis. The address relocation formula is $16+(addr<<1)$ . This will
-be fixed in a further release by creating a new analysis plugin, but is
-currently out-of-scope for the initial release.
-
+\section{syscalls function pointers breaks X-Refs}
+Sometimes, syscalls take for arguments function pointers. An analyzer has been
+created to be able to analyze this specific case but I have been unable to find
+a way to get a similar instruction but resolving the relocation without breaking
+the assembler.
+As such pointers are written down as comments next to the instruction. You would
+have to use those to verify X-Refs until a better solution is found.
 
 \end{document}
