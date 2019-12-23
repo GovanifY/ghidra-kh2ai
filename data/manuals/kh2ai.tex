@@ -169,53 +169,93 @@ This section shows the supplementary information about programming when using th
 
 \Chapter{Instruction Set}
 
-\ISA{PUSH: Push}{b}{c}{}{sleigh/push.v.txt}{f}{01000000010010010000111111010000111111}
+\ISA{PUSH.V: PUSH a Value}{b}{c}{}{sleigh/push.v.txt}{f}{01000000010010010000111111010000111111}
 
-\ISA{PUSHA: Push and Add}{b}{c}{}{sleigh/push.a.txt}{f}{01000000010010010000111111010000}
+\ISA{PUSH.A: PUSH and Add}{b}{c}{}{sleigh/push.a.txt}{f}{01000000010010010000111111010000}
 
-\ISA{PUSHAP: Push and Add to Pointer}{b}{c}{}{sleigh/push.ap.txt}{f}{01000000010010010000111111010000}
+\ISA{PUSH.AP: PUSH and Add to Pointer}{b}{c}{}{sleigh/push.ap.txt}{f}{01000000010010010000111111010000}
 
-\ISA{POP: pop}{b}{c}{}{sleigh/popat.txt}{f}{01000000010010010000111111010000}
+\ISA{POP.A: POP and Add}{b}{c}{}{sleigh/pop.a.txt}{f}{01000000010010010000111111010000}
 
-\ISA{CFTI: Convert Float To Int}{CFTI}{c}{}{sleigh/cfti.txt}{f}{01000000010010010000111111010000}
+\ISA{POP.L: POP at given relocated Label}{b}{c}{}{sleigh/pop.l.txt}{f}{01000000010010010000111111010000}
 
-\ISA{NEG: convert to NEGative signed number}{NEG}{c}{}{sleigh/neg.txt}{f}{01000000010010010000111111010000}
+\ISA{CFTI: Convert Float To Int}{CFTI}{Retrieves the last value pushed on to
+the stack and converts it from a signed integer to a floating point value, pushing back the result to the
+stack.}{}{sleigh/cfti.txt}{}{0000010100000000}
 
-\ISA{INV: INVert an unsigned value}{INV}{c}{}{sleigh/inv.txt}{f}{01000000010010010000111111010000}
+\ISA{NEG: convert to NEGative signed number}{NEG}{Retrieves the last value pushed on to
+the stack and converts it to a negative number, pushing back the result to the
+stack.}{}{sleigh/neg.txt}{}{1000010100000000}
 
-\ISA{EQZ: conditional is EQual Zero}{EQZ}{c}{}{sleigh/eqz.txt}{f}{01000000010010010000111111010000}
+\ISA{INV: INVert an unsigned value}{INV}{Retrieves the last value pushed on to
+the stack and inverts it, pushing back the result to the
+stack.}{}{sleigh/inv.txt}{}{1100010100000000}
 
-\ISA{ABS: convert to ABSolute value}{ABS}{c}{}{sleigh/abs.txt}{f}{01000000010010010000111111010000}
+\ISA{EQZ: conditional is EQual Zero}{EQZ}{Retrieves the last value pushed on to
+the stack and compares it to zero, pushing back the result to the
+stack.}{}{sleigh/eqz.txt}{}{0000010100000001}
 
-\ISA{MSB: return Most Significant Bit}{MSB}{c}{}{sleigh/msb.txt}{f}{01000000010010010000111111010000}
+\ISA{ABS: convert to ABSolute value}{ABS}{Retrieves the last value pushed on to
+the stack and converts it to an absolute value, pushing back the result to the
+stack.}{}{sleigh/abs.txt}{}{0100010100000001}
 
-\ISA{INFO: conditional INFerior to One}{INFO}{c}{}{sleigh/info.txt}{f}{01000000010010010000111111010000}
+\ISA{MSB: return Most Significant Bit}{MSB}{Retrieves the last value pushed on to
+the stack and gets back its most significant bit, pushing back the result to the
+stack.}{}{sleigh/msb.txt}{}{1000010100000001}
 
-\ISA{NEQZ: conditional Not Equal to Zero}{NEQZ}{c}{}{sleigh/neqz.txt}{f}{01000000010010010000111111010000}
+\ISA{INFO: conditional INFerior to One}{INFO}{Retrieves the last value pushed on to
+the stack and compares it to one, pushing back the result to the
+stack.}{}{sleigh/info.txt}{}{1100010100000001}
 
-\ISA{MSBI: return Most Significant Bit Inverted}{MSBI}{c}{}{sleigh/msbi.txt}{f}{01000000010010010000111111010000}
+\ISA{NEQZ: conditional Not Equal to Zero}{NEQZ}{Retrieves the last value pushed on to
+the stack and compares it to zero, pushing back the result to the
+stack.}{}{sleigh/neqz.txt}{}{0100010100000010}
 
-\ISA{IPOS: Conditional Is POSitive}{IPOS}{c}{}{sleigh/ipos.txt}{f}{01000000010010010000111111010000}
+\ISA{MSBI: return Most Significant Bit Inverted}{MSBI}{Retrieves the last value pushed on to
+the stack and gets back its most significant bit and inverts it, pushing back the result to the
+stack.}{}{sleigh/msbi.txt}{}{1000010100000010}
 
-\ISA{CITF: Convert Int To Float}{CITF}{c}{}{sleigh/citf.txt}{f}{01000000010010010000111111010000}
+\ISA{IPOS: Conditional Is POSitive}{IPOS}{Retrieves the last value pushed on to
+the stack and compares it to zero, pushing back the result to the
+stack.}{}{sleigh/ipos.txt}{}{1100010100000010}
 
-\ISA{NEGF: convert to NEGative Float}{NEGF}{c}{}{sleigh/negf.txt}{f}{01000000010010010000111111010000}
+\ISA{CITF: Convert Int To Float}{CITF}{Retrieves the last value pushed on to
+the stack and converts it from a signed integer to a floating point value, pushing back the result to the
+stack.}{}{sleigh/citf.txt}{}{0001010100000000}
 
-\ISA{ABSF: convert to ABSolute Float}{ABSF}{c}{}{sleigh/absf.txt}{f}{01000000010010010000111111010000}
+\ISA{NEGF: convert to NEGative Float}{NEGF}{Retrieves the last value pushed on to
+the stack and converts it to a negative value, pushing back the result to the
+stack.}{}{sleigh/negf.txt}{This function exclusively deals with floating numbers}{1001010100000000}
 
-\ISA{INFZF: Conditional INFerior to Zero Float}{INFZF}{c}{}{sleigh/infzf.txt}{f}{01000000010010010000111111010000}
+\ISA{ABSF: convert to ABSolute Float}{ABSF}{Retrieves the last value pushed on to
+the stack and converts it to an absolute value, pushing back the result to the
+stack.}{}{sleigh/absf.txt}{This function exclusively deals with floating numbers}{0101010100000001}
+
+\ISA{INFZF: Conditional INFerior to Zero Float}{INFZF}{Retrieves the last value pushed on to
+the stack and compares it to zero, pushing back the result to the
+stack.}{}{sleigh/infzf.txt}{This function exclusively deals with floating numbers}{1001010100000001}
 
 \ISA{INFOEZF: Conditional INFerior Or Equal to Zero
-Float}{INFOEZF}{c}{}{sleigh/infoezf.txt}{f}{01000000010010010000111111010000}
+Float}{INFOEZF}{Retrieves the last value pushed on to
+the stack and compares it to zero, pushing back the result to the
+stack.}{}{sleigh/infoezf.txt}{This function exclusively deals with floating numbers}{1101010100000001}
 
-\ISA{EQZF: conditional is EQual Zero Float}{EQZF}{c}{}{sleigh/eqzf.txt}{f}{01000000010010010000111111010000}
+\ISA{EQZF: conditional is EQual Zero Float}{EQZF}{Retrieves the last value pushed on to
+the stack and compares it to zero, pushing back the result to the
+stack.}{}{sleigh/eqzf.txt}{This function exclusively deals with floating numbers}{0001010100000010}
 
-\ISA{NEQZF: conditional Not Equal to Zero Float}{NEQZF}{c}{}{sleigh/neqzf.txt}{f}{01000000010010010000111111010000}
+\ISA{NEQZF: conditional Not Equal to Zero Float}{NEQZF}{Retrieves the last value pushed on to
+the stack and compares it to zero, pushing back the result to the
+stack.}{}{sleigh/neqzf.txt}{This function exclusively deals with floating numbers}{0101010100000010}
 
 \ISA{SUPOEZF: conditional SUPerior Or Equal to Zero
-Float}{SUPOEZF}{c}{}{sleigh/supoezf.txt}{f}{01000000010010010000111111010000}
+Float}{SUPOEZF}{Retrieves the last value pushed on to
+the stack and compares it to zero, pushing back the result to the
+stack.}{}{sleigh/supoezf.txt}{This function exclusively deals with floating numbers}{1001010100000010}
 
-\ISA{SUPZF: conditional SUPerior to Zero Float}{SUPZF}{c}{}{sleigh/supzf.txt}{f}{01000000010010010000111111010000}
+\ISA{SUPZF: conditional SUPerior to Zero Float}{SUPZF}{Retrieves the last value pushed on to
+the stack and compares it to zero, pushing back the result to the
+stack.}{}{sleigh/supzf.txt}{This function exclusively deals with floating numbers}{1101010100000010}
 
 \ISA{ADD: ADDition}{ADD}{Retrieves the last 2 values pushed on to
 the stack and applies an addition between them, pushing back the result to the
@@ -293,6 +333,7 @@ unknown. The following address relocation formula is applied when decoding a
 into addr: $addr=inst\_start+(a*2)+4$ where inst\_start is the beginning of the
 instruction.}{ii001000iiiiiiiiaaaaaaaaaaaaaaaa}
 
+% TODO: check r!!!
 \ISA{EXIT: EXIT}{EXIT ri}{Completely stops the execution flow of the AI Parser
 with return code ri}{}{sleigh/exit.txt}{In the bitwise encoding ri is encoded as
 $r=ri-1$}{000010010000000r}

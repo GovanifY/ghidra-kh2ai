@@ -61,17 +61,17 @@
 
 # sometimes it has arguments, to check!
 # this is a pop_at!!!!!
-:popat_unk0 is opcode_ext=1 & ope3=0 & ope2 & rn {
+:pop_unk0 is opcode_ext=1 & ope3=0 & ope2 & rn {
 }
 
-:popat rn, ope2 is opcode_ext=1 & ope3=1 & ope2 & rn {
+:pop.a rn, ope2 is opcode_ext=1 & ope3=1 & ope2 & rn {
 }
 
 :popat_unk2 is opcode_ext=1 & ope3=2 & ope2 & rn {
 }
 
 # no shit this isn't used in practice
-:popat LABEL02 is opcode_ext=1 & ope3=3 & LABEL02 {
+:pop.l LABEL02 is opcode_ext=1 & ope3=3 & LABEL02 {
     push(LABEL02:4);
 }
 

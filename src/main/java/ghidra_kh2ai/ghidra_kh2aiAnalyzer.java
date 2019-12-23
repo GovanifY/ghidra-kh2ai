@@ -145,7 +145,7 @@ public class ghidra_kh2aiAnalyzer extends AbstractAnalyzer {
 	            monitor.incrementProgress( 1 );
 
 	            String mnemonicString = instruction.getMnemonicString( );
-	            // i have NO CLUE why but some syscalls incorrectly report a 2 item array...
+
 	            if (mnemonicString.contains("syscall")) {
 	                Scalar arg1 = (Scalar)instruction.getOpObjects(0)[0];
 	                Scalar arg2 = (Scalar)instruction.getOpObjects(1)[0];
