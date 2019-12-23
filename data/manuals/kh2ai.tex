@@ -20,7 +20,7 @@
 
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[R]{KH2Ai ISA \version}
+\fancyhead[R]{KH2AI ISA \version}
 \fancyhead[L]{Gauvain "GovanifY" Roussel-Tarbouriech}
 \fancyfoot{-\thepage-}
 % alternating footer
@@ -87,7 +87,7 @@
 \newcommand\bitpicture [1]{%
   \StrLen{#1}[\bitlen]
   \StrLeft{#1}{32}[\bita]
-  \StrRight{#1}{32}[\bitb]
+  \StrGobbleLeft{#1}{32}[\bitb]
   \ifthenelse{\bitlen > 16}{\setlength{\unitlength}{0.9mm}}{\setlength{\unitlength}{1.6mm}}
   \setlength{\fboxsep}{0mm}
   \begin{picture}(130,16)
@@ -137,9 +137,23 @@
 
 \begin{document}
 
-\Main{Kh2Ai ISA}{\version}
+\Main{KH2AI ISA}{\version}
 
-Blabla 
+Kingdom Hearts 2 is a video game developped by Square Enix that also happens to
+be a very good game. As Square loves to reinvent the wheel they decided to make
+a custom AI assembler like scripting language for this engine, which also
+happens to be pretty inconsistent. 
+This document will, in its value of a document, document this language as an
+Instruction Set Architecture(ISA) with additional information when necessary.
+
+This booklet is separated into parts:
+\begin{itemize}
+\item The Notational Convention, explaining how every instruction is defined
+\item The Instruction Set, defining every operation in this language
+\item The System Calls, documenting calls done by the language outside of its own scope
+\item Known issues, if any
+\item An appendix for additional documents that might help comprehension
+\end{itemize}
 It is also worthy to note that some operations that otherwise do the same thing
 are given a different mnemonic depending on the context to be easier to write an
 assembler. An example of this can be seen in the PUSH.V and PUSH.L operations,
@@ -150,7 +164,7 @@ encoded address before pushing it, making the different naming needed.
 \Chapter{Notational Convention}
 
 \section{Instruction Format of Each Instruction} 
-The description of each instruction uses the following format. 
+The description of each instruction uses the following format:
 
 \section{Mnemonic}
 Page headings show the instruction mnemonic and a brief description of the function, and the MIPS architecture level.
@@ -163,21 +177,38 @@ This section describes the instruction function and operation.
 \section{Exception Section} 
 This section shows the exceptions that can be caused by the instructions. 
 \section{Operation Section}
-This section describes the instruction operations in SLEIGH. You can refer to SLEIGH's own documentation for its notational conventions.
+This section describes the instruction operations in SLEIGH. You can refer to
+SLEIGH's own documentation for its notational conventions and refer to the
+Appendix for the custom SLEIGH notational conventions defined.
 \section{Programming Notes Section}
 This section shows the supplementary information about programming when using the instruction.
 
+
 \Chapter{Instruction Set}
 
-\ISA{PUSH.V: PUSH a Value}{b}{c}{}{sleigh/push.v.txt}{f}{01000000010010010000111111010000111111}
+\ISA{PUSH.V: PUSH a Value}{PUSH.V
+ri}{Pushes a value to the stack.}{}{sleigh/push.v.txt}{}{0000000000000000iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii}
 
-\ISA{PUSH.A: PUSH and Add}{b}{c}{}{sleigh/push.a.txt}{f}{01000000010010010000111111010000}
+\ISA{PUSH..L: PUSH a given relocated Label}{PUSH.L la}{Pushes a relocated
+label(address pointer) to the stack.}{}{sleigh/push.l.txt}{The relocation
+formula is $0x10+(l>>1)$}{1110000000000000llllllllllllllll}
 
-\ISA{PUSH.AP: PUSH and Add to Pointer}{b}{c}{}{sleigh/push.ap.txt}{f}{01000000010010010000111111010000}
+\ISA{PUSH.A: PUSH and Add}{PUSH.A rn, ri}{Pushes to the stack the value
+(rn+ri).}{}{sleigh/push.a.txt}{}{rr11000000000000iiiiiiiiiiiiiiii}
 
-\ISA{POP.A: POP and Add}{b}{c}{}{sleigh/pop.a.txt}{f}{01000000010010010000111111010000}
+\ISA{PUSH.AP: PUSH and Add to Pointer}{PUSH.AP rn, ri}{Pushed to the stack a
+pointer toward
+(rn+ri).}{}{sleigh/push.ap.txt}{}{rr10000000000000iiiiiiiiiiiiiiii}
 
-\ISA{POP.L: POP at given relocated Label}{b}{c}{}{sleigh/pop.l.txt}{f}{01000000010010010000111111010000}
+\ISA{POP.A: POP and Add}{POP.A rn, ri}{Pops the last value from the stack to the
+address (rn+ri).}{}{sleigh/pop.a.txt}{}{rr00000100000000iiiiiiiiiiiiiiii}
+
+\ISA{POP.L: POP at a given relocated Label}{POP.L la}{Pops the latest value from
+the stack and stores it at the relocated
+label(address pointer) la.}{}{sleigh/push.l.txt}{The relocation
+formula is $0x10+(l>>1)$. This opcode is never used in practice as the only way
+to use this opcode is to modify the AI's own ram region, which would create
+self-modifying code.}{1100000100000000llllllllllllllll}
 
 \ISA{CFTI: Convert Float To Int}{CFTI}{Retrieves the last value pushed on to
 the stack and converts it from a signed integer to a floating point value, pushing back the result to the
@@ -333,17 +364,20 @@ unknown. The following address relocation formula is applied when decoding a
 into addr: $addr=inst\_start+(a*2)+4$ where inst\_start is the beginning of the
 instruction.}{ii001000iiiiiiiiaaaaaaaaaaaaaaaa}
 
-% TODO: check r!!!
 \ISA{EXIT: EXIT}{EXIT ri}{Completely stops the execution flow of the AI Parser
 with return code ri}{}{sleigh/exit.txt}{In the bitwise encoding ri is encoded as
-$r=ri-1$}{000010010000000r}
+$r=ri-1$}{00001001ii000000}
 
 \ISA{RET: RETurn}{RET}{Stops the execution flow and return back to the last
 saved function call}{}{sleigh/ret.txt}{}{1000100100000000}
 
-\ISA{PUSH.CA: PUSH CAched value}{PUSHCA}{c}{}{sleigh/push.ca.txt}{f}{1100100100000000}
+\ISA{PUSH.CA: PUSH CAched value}{PUSH.CA}{Pushes the last cached stack value to
+the stack}{}{sleigh/push.ca.txt}{This seems to have the same effect as PUSH.C
+but without doing a POP. I have no clue why both of those instructions exist
+alongisde another.}{1100100100000000}
 
-\ISA{PUSH.C: PUSH Copy}{PUSHC}{c}{}{sleigh/push.c.txt}{}{0100100100000001}
+\ISA{PUSH.C: PUSH Copy}{PUSH.C}{Pops the latest value from the stack and pushes
+it back twice}{}{sleigh/push.c.txt}{}{0100100100000001}
 
 \ISA{SIN: SINus}{SIN}{Retrieves the latest value pushed to the stack and apply a
 sinus onto it, pushing it to the stack}{}{sleigh/sin.txt}{Radians are used as input.
@@ -361,16 +395,23 @@ are modulo $[\pi-2\pi]$}{0000100100000010}
 stack and converts it to degrees, pushing it to the stack}{}{sleigh/radd.txt}
 {Radians used are modulo $[\pi-2\pi]$}{0100100100000010}
 
-\ISA{SYSCALL: SYStem CALL}{b}{c}{}{sleigh/syscall.txt}{f}{TODO}
+\ISA{SYSCALL: SYStem CALL}{syscall ri, ra}{Executes a System Call, using the
+stack as arguments}{}{sleigh/syscall.txt}{Refer to the syscall own documentation
+chapter for more information about this
+instruction.}{ii00101000000000aaaaaaaaaaaaaaaa}
+
 
 
 \Chapter{System Calls}
 
 \section{Introduction}
-What is a system call blabla.
+KH2AI has an instruction used to call some functions into the base game, which
+we call syscall, short for System Call. 
 None of them are currently documented, they are available at address 0x0034dd00
-of SLPM\_666.75,  and there is 738 elements if I'm not mistaken. Either try to
-guess their arguments 
+of SLPM\_666.75, which is Kingdom Hearts 2 Final Mix ELF file. If you want to
+contribute you can submit your syscall findings at
+\url{https://framaforms.org/kh2ai-report-errata-1577102965} for them to be
+incorporated into the next release of the ISA.
 
 
 \Chapter{Known issues}
@@ -391,5 +432,10 @@ a way to get a similar instruction but resolving the relocation without breaking
 the assembler.
 As such pointers are written down as comments next to the instruction. You would
 have to use those to verify X-Refs until a better solution is found.
+
+
+\Chapter{Appendix}
+\section{SLEIGH additional notational convention}
+\lstinputlisting[breaklines=true]{../languages/base.sinc} 
 
 \end{document}
