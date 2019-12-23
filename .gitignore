@@ -17,3 +17,4 @@ dist/*
 .antProperties.xml
 .classpath
 .project
+data/manuals/sleigh/*

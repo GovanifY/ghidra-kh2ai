@@ -419,7 +419,7 @@
     local tmp2:4 = sp;
     pop(tmp);
     pop(tmp2);
-# primitive doesn't exist, so we do with what we can
+    # primitive doesn't exist, so we do with what we can
     local ret:4 = fmod(tmp2, tmp);
     push(ret);
 }

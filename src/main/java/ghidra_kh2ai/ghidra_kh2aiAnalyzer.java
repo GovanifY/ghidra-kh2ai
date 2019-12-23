@@ -165,7 +165,7 @@ public class ghidra_kh2aiAnalyzer extends AbstractAnalyzer {
 	                }
 	            }
 	    }
-	    // kind of a bottleneck but note like kh2 ai is going to be more than 100kb ever
+	    // kind of a bottleneck but not like kh2 ai is going to be more than 100kb ever
 	    if(new_pass ) {
 	        // we added a bunch of functions, might be a good idea to do another pass
 	        AutoAnalysisManager mgr = AutoAnalysisManager.getAnalysisManager(program);

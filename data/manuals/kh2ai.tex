@@ -10,6 +10,7 @@
 \usepackage{xinttools}
 \usepackage{xstring}
 \usepackage{ifthen}
+\usepackage{listings}
 
 \newcounter{bitindex}
 
@@ -72,9 +73,11 @@
 \textbf{Exceptions} \\ 
 \hspace*{0.5cm} #4 \\ \\
 }
-\textbf{Operations} \\ 
-\hspace*{0.5cm} #5 \\ \\
-\ifthenelse{\equal{notelen}{0}}{}{
+\textbf{Operations} %\\ 
+%\hspace*{0.5cm} \lstinputlisting{#5} \\ \\
+\lstinputlisting[xleftmargin=0.5cm]{#5} 
+%\\ \\
+\ifthenelse{\equal{\notelen}{0}}{}{
 \textbf{Programming notes} \\ 
 \hspace*{0.5cm} #6 \\ \\
 }
@@ -166,126 +169,158 @@ This section shows the supplementary information about programming when using th
 
 \Chapter{Instruction Set}
 
-\ISA{PUSH: Push}{b}{c}{d}{e}{f}{01000000010010010000111111010000111111}
+\ISA{PUSH: Push}{b}{c}{}{sleigh/push.v.txt}{f}{01000000010010010000111111010000111111}
 
-\ISA{PUSHA: Push and Add}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{PUSHA: Push and Add}{b}{c}{}{sleigh/push.a.txt}{f}{01000000010010010000111111010000}
 
-\ISA{PUSHAP: Push and Add to Pointer}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{PUSHAP: Push and Add to Pointer}{b}{c}{}{sleigh/push.ap.txt}{f}{01000000010010010000111111010000}
 
-\ISA{POP: pop}{b}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{POP: pop}{b}{c}{}{sleigh/popat.txt}{f}{01000000010010010000111111010000}
 
-\ISA{CFTI: Convert Float To Int}{CFTI}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{CFTI: Convert Float To Int}{CFTI}{c}{}{sleigh/cfti.txt}{f}{01000000010010010000111111010000}
 
-\ISA{NEG: convert to NEGative signed number}{NEG}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{NEG: convert to NEGative signed number}{NEG}{c}{}{sleigh/neg.txt}{f}{01000000010010010000111111010000}
 
-\ISA{INV: INVert an unsigned value}{INV}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{INV: INVert an unsigned value}{INV}{c}{}{sleigh/inv.txt}{f}{01000000010010010000111111010000}
 
-\ISA{EQZ: conditional is EQual Zero}{EQZ}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{EQZ: conditional is EQual Zero}{EQZ}{c}{}{sleigh/eqz.txt}{f}{01000000010010010000111111010000}
 
-\ISA{ABS: convert to ABSolute value}{ABS}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{ABS: convert to ABSolute value}{ABS}{c}{}{sleigh/abs.txt}{f}{01000000010010010000111111010000}
 
-\ISA{MSB: return Most Significant Bit}{MSB}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{MSB: return Most Significant Bit}{MSB}{c}{}{sleigh/msb.txt}{f}{01000000010010010000111111010000}
 
-\ISA{INFO: conditional INFerior to One}{INFO}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{INFO: conditional INFerior to One}{INFO}{c}{}{sleigh/info.txt}{f}{01000000010010010000111111010000}
 
-\ISA{NEQZ: conditional Not Equal to Zero}{NEQZ}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{NEQZ: conditional Not Equal to Zero}{NEQZ}{c}{}{sleigh/neqz.txt}{f}{01000000010010010000111111010000}
 
-\ISA{MSBI: return Most Significant Bit Inverted}{MSBI}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{MSBI: return Most Significant Bit Inverted}{MSBI}{c}{}{sleigh/msbi.txt}{f}{01000000010010010000111111010000}
 
-\ISA{IPOS: Conditional Is POSitive}{IPOS}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{IPOS: Conditional Is POSitive}{IPOS}{c}{}{sleigh/ipos.txt}{f}{01000000010010010000111111010000}
 
-\ISA{CITF: Convert Int To Float}{CITF}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{CITF: Convert Int To Float}{CITF}{c}{}{sleigh/citf.txt}{f}{01000000010010010000111111010000}
 
-\ISA{NEGF: convert to NEGative Float}{NEGF}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{NEGF: convert to NEGative Float}{NEGF}{c}{}{sleigh/negf.txt}{f}{01000000010010010000111111010000}
 
-\ISA{ABS: convert to ABSolute Float}{ABS}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{ABSF: convert to ABSolute Float}{ABSF}{c}{}{sleigh/absf.txt}{f}{01000000010010010000111111010000}
 
-\ISA{INFZF: Conditional INFerior to Zero Float}{INFZF}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{INFZF: Conditional INFerior to Zero Float}{INFZF}{c}{}{sleigh/infzf.txt}{f}{01000000010010010000111111010000}
 
-\ISA{INFOEZF: Conditional INFerior Or Equal to Zero Float}{INFOEZF}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{INFOEZF: Conditional INFerior Or Equal to Zero
+Float}{INFOEZF}{c}{}{sleigh/infoezf.txt}{f}{01000000010010010000111111010000}
 
-\ISA{EQZF: conditional is EQual Zero Float}{EQZF}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{EQZF: conditional is EQual Zero Float}{EQZF}{c}{}{sleigh/eqzf.txt}{f}{01000000010010010000111111010000}
 
-\ISA{NEQZF: conditional Not Equal to Zero Float}{NEQZF}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{NEQZF: conditional Not Equal to Zero Float}{NEQZF}{c}{}{sleigh/neqzf.txt}{f}{01000000010010010000111111010000}
 
-\ISA{SUPOEZF: conditional SUPerior Or Equal to Zero Float}{SUPOEZF}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{SUPOEZF: conditional SUPerior Or Equal to Zero
+Float}{SUPOEZF}{c}{}{sleigh/supoezf.txt}{f}{01000000010010010000111111010000}
 
-\ISA{SUPZF: conditional SUPerior to Zero Float}{SUPZF}{c}{d}{e}{f}{01000000010010010000111111010000}
+\ISA{SUPZF: conditional SUPerior to Zero Float}{SUPZF}{c}{}{sleigh/supzf.txt}{f}{01000000010010010000111111010000}
 
-\ISA{ADD: ADDition}{ADD}{c}{d}{e}{f}{11000010000000001}
+\ISA{ADD: ADDition}{ADD}{Retrieves the last 2 values pushed on to
+the stack and applies an addition between them, pushing back the result to the
+stack.}{}{sleigh/add.txt}{}{0000011000000000}
 
-\ISA{SUB: SUBstraction}{SUB}{c}{d}{e}{f}{11000010000000001}
+\ISA{SUB: SUBstraction}{SUB}{Retrieves the last 2 values pushed on to
+the stack and applies a substraction between them, pushing back the result to the
+stack.}{}{sleigh/sub.txt}{}{0100011000000000}
 
-\ISA{MUL: MULtiplication}{MUL}{c}{d}{e}{f}{11000010000000010}
+\ISA{MUL: MULtiplication}{MUL}{Retrieves the last 2 values pushed on to
+the stack and applies a multiplication between them, pushing back the result to the
+stack.}{}{sleigh/mul.txt}{}{1000011000000000}
 
-\ISA{DIV: DIVision}{DIV}{c}{d}{e}{f}{11000010000000011}
+\ISA{DIV: DIVision}{DIV}{Retrieves the last 2 values pushed on to
+the stack and applies a division between them, pushing back the result to the
+stack.}{}{sleigh/div.txt}{}{1100011000000000}
 
-\ISA{MOD: MODulo}{MOD}{c}{d}{e}{f}{11000010000000100}
+\ISA{MOD: MODulo}{MOD}{Retrieves the last 2 values pushed on to
+the stack and applies a modulo between them, pushing back the result to the
+stack.}{}{sleigh/mod.txt}{}{0000011000000001}
 
-\ISA{AND: logical AND}{AND}{c}{d}{e}{f}{11000010000000101}
+\ISA{AND: logical AND}{AND}{Retrieves the last 2 values pushed on to
+the stack and applies a logical and between them, pushing back the result to the
+stack.}{}{sleigh/and.txt}{}{0100011000000001}
 
-\ISA{OR: logical OR}{OR}{c}{d}{e}{f}{11000010000000110}
+\ISA{OR: logical OR}{OR}{Retrieves the last 2 values pushed on to
+the stack and applies a logical or between them, pushing back the result to the
+stack.}{}{sleigh/or.txt}{}{1000011000000001}
 
-\ISA{XOR: logical eXclusive OR}{XOR}{c}{d}{e}{f}{11000010000000111}
+\ISA{XOR: logical eXclusive OR}{XOR}{Retrieves the last 2 values pushed on to
+the stack and applies an exclusive or between them, pushing back the result to the
+stack.}{}{sleigh/xor.txt}{}{1100011000000001}
 
-\ISA{SLL: Shift Logical Left}{SLL}{c}{d}{e}{f}{11000010000001000}
+\ISA{SLL: Shift Logical Left}{SLL}{Retrieves the last 2 values pushed on to
+the stack and applies a left logical shift between them, pushing back the result to the
+stack.}{}{sleigh/sll.txt}{}{0000011000000010}
 
-\ISA{SRA: Shift Right Arithmetic}{SRA}{c}{d}{e}{f}{11000010000001001}
+\ISA{SRA: Shift Right Arithmetic}{SRA}{Retrieves the last 2 values pushed on to
+the stack and applies a right arithmetic shift between them, pushing back the result to the
+stack.}{}{sleigh/sra.txt}{}{0100011000000010}
 
-\ISA{NEQZV: conditional Not EQual to Zero with stack Values}{NEQZV}{c}{d}{e}{f}{1100001000001010}
+\ISA{NEQZV: conditional Not EQual to Zero with stack
+Values}{NEQZV}{Retrieves the last 2 values pushed on to the stack and verifies if
+both are equal to zero, pushing back the result to the
+stack.}{}{sleigh/neqzv.txt}{}{1100011000000010}
 
-\ISA{EQZV: conditional EQual to Zero with stack Values}{EQZV}{c}{d}{e}{f}{11000010000001011}
+\ISA{EQZV: conditional EQual to Zero with stack
+Values}{EQZV}{Retrieves the last 2 values pushed on to the stack and verifies if
+both are equal to zero, pushing back the result to the
+stack.}{}{sleigh/eqzv.txt}{}{1000011000000010}
 
 \ISA{ADDF: ADDition with Float values}{ADDF}{Retrieves the last 2 values pushed on
 to the stack and apply an addition onto them, pushing back the result to the
-stack.}{d}{e}{This function exclusively deals with floating numbers}{11000010000000000}
+stack.}{}{sleigh/addf.txt}{This function exclusively deals with floating numbers}{0001011000000000}
 
 \ISA{SUBF: SUBstraction with Float values}{SUBF}{Retrieves the last 2 values pushed on
 to the stack and apply a substraction onto them, pushing back the result to the
-stack.}{}{}{This function exclusively deals with floating numbers}{11000010000000001}
+stack.}{}{sleigh/subf.txt}{This function exclusively deals with floating numbers}{0101011000000000}
 
 \ISA{MULF: MULtiplication with Float values}{MULF}{Retrieves the last 2 values pushed on
 to the stack and apply a multiplication onto them, pushing back the result to the
-stack.}{}{}{This function exclusively deals with floating numbers}{11000010000000010}
+stack.}{}{sleigh/mulf.txt}{This function exclusively deals with floating numbers}{1001011000000000}
 
 \ISA{DIVF: DIVision with Float values}{DIVF}{Retrieves the last 2 values pushed on
 to the stack and apply a division onto them, pushing back the result to the
-stack.}{}{}{This function exclusively deals with floating numbers}{11000010000000011}
+stack.}{}{sleigh/divf.txt}{This function exclusively deals with floating numbers}{1101011000000000}
 
 \ISA{MODF: MODulo with Float values}{MODF}{Retrieves the last 2 values pushed on
 to the stack and apply a modulo onto them, pushing back the result to the
-stack.}{}{}{This function exclusively deals with floating numbers}{11000010000000100}
+stack.}{}{sleigh/modf.txt}{This function exclusively deals with floating numbers}{0001011000000001}
 
-\ISA{JMP: JuMP}{b}{c}{d}{e}{f}{TODO}
+\ISA{JMP: JuMP}{JMP ri, addr}{Change the control flow to the given address addr
+and saves the instruction following it as the return pointer.}{}{sleigh/jmp.txt}{Argument ri is currently
+unknown. The following address relocation formula is applied when decoding a
+into addr: $addr=inst\_start+(a*2)+4$ where inst\_start is the beginning of the
+instruction.}{ii001000iiiiiiiiaaaaaaaaaaaaaaaa}
 
 \ISA{EXIT: EXIT}{EXIT ri}{Completely stops the execution flow of the AI Parser
-with return code ri}{}{}{}{100100000000000r}
+with return code ri}{}{sleigh/exit.txt}{In the bitwise encoding ri is encoded as
+$r=ri-1$}{000010010000000r}
 
-% bitfields below are all verified
 \ISA{RET: RETurn}{RET}{Stops the execution flow and return back to the last
-saved function call}{}{}{}{1000100100000000}
+saved function call}{}{sleigh/ret.txt}{}{1000100100000000}
 
-\ISA{PUSH.CA: PUSH CAched value}{PUSHCA}{c}{d}{e}{f}{1100100100000000}
+\ISA{PUSH.CA: PUSH CAched value}{PUSHCA}{c}{}{sleigh/push.ca.txt}{f}{1100100100000000}
 
-\ISA{PUSH.C: PUSH Copy}{PUSHC}{c}{d}{e}{f}{0100100100000001}
+\ISA{PUSH.C: PUSH Copy}{PUSHC}{c}{}{sleigh/push.c.txt}{}{0100100100000001}
 
 \ISA{SIN: SINus}{SIN}{Retrieves the latest value pushed to the stack and apply a
-sinus onto it, pushing it to the stack}{}{}{Radians are used as input.
+sinus onto it, pushing it to the stack}{}{sleigh/sin.txt}{Radians are used as input.
 Radians used are modulo $[\pi-2\pi]$}{1000100100000001}
 
 \ISA{COS: COSinus}{COS}{Retrieves the latest value pushed to the stack and apply a
-cosinus onto it, pushing it to the stack}{}{}{Radians are used as input.
+cosinus onto it, pushing it to the stack}{}{sleigh/cos.txt}{Radians are used as input.
 Radians used are modulo $[\pi-2\pi]$}{1100100100000001}
 
 \ISA{DEGR: DEGrees to Radians}{DEGR}{Retrieves the last element pushed to the stack
-and converts it to radians, pushing it to the stack}{}{}{Radians used
+and converts it to radians, pushing it to the stack}{}{sleigh/degr.txt}{Radians used
 are modulo $[\pi-2\pi]$}{0000100100000010}
 
 \ISA{RADD: RADians to Degrees}{RADD}{Retrieves the last element pushed to the
-stack and converts it to degrees, pushing it to the stack}{}{}
+stack and converts it to degrees, pushing it to the stack}{}{sleigh/radd.txt}
 {Radians used are modulo $[\pi-2\pi]$}{0100100100000010}
 
-\ISA{SYSCALL: SYStem CALL}{b}{c}{d}{e}{f}{TODO}
+\ISA{SYSCALL: SYStem CALL}{b}{c}{}{sleigh/syscall.txt}{f}{TODO}
 
 
 \Chapter{System Calls}
