@@ -7,7 +7,7 @@ Artificial Intelligence's format.
 ghidra-kh2ai, as its name suggests, is developped for the Software Reverse
 Engineering(SRE) framework Ghidra.
 
-More informations about the project can be found at: govanify.com/TODO_BLOG
+More informations about the project can be found at: https://govanify.com/post/kh2ai/
 
 # Why Ghidra
 
@@ -39,5 +39,5 @@ You will end up with an extension zip in the dist folder
 
 # Can I have a tutorial on how to mod KH2 AI
 
-put link to xaddgx video here
+https://www.youtube.com/watch?v=FvwNa_0fNw8
 
